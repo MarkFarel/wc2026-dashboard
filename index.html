@@ -88,7 +88,7 @@
   .metric-val { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: var(--gold2); }
   .metric-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
 
-  /* FILTERS */
+  /* FILTERS & TOOLS */
   .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: .9rem; align-items: center; }
   .filter-row select, .filter-row input {
     font-size: 12px; padding: 6px 10px;
@@ -119,15 +119,16 @@
   }
   .sec-label:first-child { border-top: none; margin-top: 0; }
 
-  /* FIXTURES */
+  /* FIXTURES WITH SCORE BOXES */
   .match-card {
     background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 9px 12px;
-    margin-bottom: 5px; display: flex; align-items: center;
-    gap: 10px; flex-wrap: wrap; transition: border-color .15s;
+    border-radius: var(--r); padding: 10px 14px;
+    margin-bottom: 6px; display: flex; align-items: center;
+    gap: 12px; flex-wrap: wrap; transition: border-color .15s, background-color .15s;
   }
-  .match-card:hover { border-color: var(--border2); }
-  .match-no { font-size: 10px; color: var(--text3); width: 26px; flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
+  .match-card:hover { border-color: var(--border2); background: rgba(255,255,255,0.01); }
+  .match-no { font-size: 10px; color: var(--text3); width: 28px; flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
+  
   .match-badge {
     font-size: 10px; font-weight: 600; padding: 2px 7px;
     border-radius: 99px; font-family: 'Barlow Condensed', sans-serif;
@@ -139,18 +140,41 @@
   .badge-qf { background: rgba(168,85,247,.18); color: #c084fc; border: 1px solid rgba(168,85,247,.3); }
   .badge-sf { background: rgba(239,68,68,.18); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
   .badge-f { background: rgba(245,166,35,.35); color: var(--gold2); border: 1px solid var(--gold); }
-  .match-teams { flex: 1; font-size: 13px; font-weight: 500; min-width: 200px; }
-  .match-vs { color: var(--text3); font-size: 11px; margin: 0 5px; }
-  .match-meta { font-size: 11px; color: var(--text2); text-align: right; min-width: 130px; }
+
+  /* Rebuilt interactive engine elements */
+  .match-engine {
+    display: flex; align-items: center; justify-content: center;
+    flex: 1; min-width: 280px; gap: 8px;
+  }
+  .engine-team {
+    font-size: 13px; font-weight: 500; width: 42%;
+  }
+  .engine-team.home-align { text-align: right; }
+  .engine-team.away-align { text-align: left; }
+  
+  .score-input {
+    width: 34px; height: 28px; background: var(--bg3);
+    border: 1px solid var(--border2); border-radius: 4px;
+    color: var(--text); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 700; text-align: center;
+  }
+  .score-input:focus { outline: none; border-color: var(--gold); background: var(--bg4); }
+  .score-input::-webkit-inner-spin-button, 
+  .score-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .score-input { -moz-appearance: textfield; }
+
+  .engine-vs { color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; width: 16px; text-align: center; }
+
+  .match-meta { font-size: 11px; color: var(--text2); text-align: right; min-width: 140px; margin-left: auto; }
   .match-venue { font-size: 10px; color: var(--text3); margin-top: 1px; }
 
   /* STANDINGS */
-  .standings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap: 10px; }
+  .standings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 12px; }
   .group-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
   .group-card-head {
-    padding: 7px 12px; background: var(--bg3);
+    padding: 8px 12px; background: var(--bg3);
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    font-size: 13px; font-weight: 700; letter-spacing: .06em;
     text-transform: uppercase; color: var(--text2);
     display: flex; justify-content: space-between; align-items: center;
   }
@@ -159,16 +183,17 @@
     display: flex; align-items: center; gap: 8px;
     padding: 7px 12px; border-top: 1px solid var(--border); font-size: 12px;
   }
-  .grow.qualify { border-top: 2px solid var(--blue) !important; }
-  .grow.third { border-top: 2px dashed var(--gold) !important; }
+  .grow.qualify { border-left: 3px solid var(--blue); }
+  .grow.third { border-left: 3px dashed var(--gold); }
   .gpos { font-size: 10px; color: var(--text3); width: 12px; font-family: 'Barlow Condensed', sans-serif; }
   .gflag { font-size: 15px; width: 20px; text-align: center; }
-  .gname { flex: 1; font-weight: 500; }
+  .gname { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .gcols { display: flex; gap: 14px; font-size: 11px; color: var(--text2); }
+  .gcols span { width: 16px; text-align: center; }
   .gpts { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); width: 22px; text-align: right; }
 
   /* SQUADS */
-  .nation-select-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
+  .nation-select-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
   .nation-btn {
     font-size: 13px; padding: 5px 12px; border-radius: 6px;
     border: 1px solid var(--border2); background: var(--bg3);
@@ -230,6 +255,11 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
 
+  @media (max-width: 768px) {
+    .match-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .match-engine { width: 100%; justify-content: flex-start; }
+    .match-meta { text-align: left; margin-left: 0; }
+  }
   @media (max-width: 600px) {
     .header-stats { display: none; }
     .main { padding: .75rem 1rem; }
@@ -254,25 +284,22 @@
 </div>
 
 <div class="nav">
-  <button class="active" onclick="show('fixtures',this)">📅 Fixtures</button>
-  <button onclick="show('standings',this)">📊 Standings</button>
+  <button class="active" onclick="show('fixtures',this)">📅 Fixtures &amp; Inputs</button>
+  <button onclick="show('standings',this)">📊 Live Standings</button>
   <button onclick="show('squads',this)">👥 Squad Depth</button>
   <button onclick="show('odds',this)">📈 Odds &amp; Favorites</button>
 </div>
 
 <div class="main">
 
-  <!-- FIXTURES -->
   <div id="fixtures" class="section active">
-    <div class="metrics-row">
-      <div class="metric"><div class="metric-val">72</div><div class="metric-lbl">Group stage</div></div>
-      <div class="metric"><div class="metric-val">16</div><div class="metric-lbl">Round of 32</div></div>
-      <div class="metric"><div class="metric-val">8</div><div class="metric-lbl">Round of 16</div></div>
-      <div class="metric"><div class="metric-val">4</div><div class="metric-lbl">Quarterfinals</div></div>
-      <div class="metric"><div class="metric-val">2</div><div class="metric-lbl">Semifinals</div></div>
-      <div class="metric"><div class="metric-val">Jul 19</div><div class="metric-lbl">Final — MetLife NJ</div></div>
-    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">
+      Enter real or simulated scores inside the match boxes below. The <strong>Live Standings</strong> tables will re-calculate automatically.
+    </p>
     <div class="filter-row">
+      <button class="btn btn-gold" onclick="randomResults()">⚡ Auto Simulate Group Stage</button>
+      <button class="btn" onclick="resetStandings()">↺ Clear Scores</button>
+      <span style="border-left: 1px solid var(--border2); height: 20px; margin: 0 4px;"></span>
       <select id="roundFilter" onchange="renderFixtures()">
         <option value="all">All rounds</option>
         <option value="Group Stage">Group stage</option>
@@ -315,26 +342,21 @@
     <div id="fixtureList"></div>
   </div>
 
-  <!-- STANDINGS -->
   <div id="standings" class="section">
-    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">Simulate group standings by entering match results. <span style="color:var(--blue2)">Blue line</span> = automatic qualification. <span style="color:var(--gold)">Dashed</span> = potential best 3rd place.</p>
-    <div class="filter-row">
-      <button class="btn btn-gold" onclick="randomResults()">⚡ Simulate random results</button>
-      <button class="btn" onclick="resetStandings()">↺ Reset</button>
-    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.9rem">
+      Real-time mathematical computations based on scores entered in the first tab. <span style="color:var(--blue2);font-weight:600;">Solid Border</span> = Top 2 (Qualified). <span style="color:var(--gold);font-weight:600;">Dashed Border</span> = 3rd Place line.
+    </p>
     <div class="standings-grid" id="standingsGrid"></div>
   </div>
 
-  <!-- SQUADS -->
   <div id="squads" class="section">
     <div class="nation-select-row" id="nationBtns"></div>
     <div class="squad-meta" id="squadMeta"></div>
     <div id="squadDisplay"></div>
   </div>
 
-  <!-- ODDS -->
   <div id="odds" class="section">
-    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">Outright winner odds — FanDuel / CBS Sports, early June 2026. Implied probability shown below each price.</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">Outright winner odds — early tournament updates. Implied probability shown below each price.</p>
     <div class="tier-label">🏆 Tier 1 — Frontrunners</div>
     <div class="odds-grid" id="oddsGrid1"></div>
     <div class="tier-label">⚡ Tier 2 — Serious contenders</div>
@@ -349,17 +371,16 @@
     </div>
   </div>
 
-</div><!-- /main -->
-
-<script>
+</div><script>
 const FIXTURES=[{id:1,date:"Jun 11",group:"A",round:"Group Stage",home:"Mexico",away:"South Africa",venue:"Mexico City",country:"Mexico",time:"13:00"},{id:2,date:"Jun 11",group:"A",round:"Group Stage",home:"South Korea",away:"Czechia",venue:"Guadalajara",country:"Mexico",time:"20:00"},{id:3,date:"Jun 12",group:"B",round:"Group Stage",home:"Canada",away:"Bosnia & Herz.",venue:"Toronto",country:"Canada",time:"15:00"},{id:4,date:"Jun 12",group:"D",round:"Group Stage",home:"USA",away:"Paraguay",venue:"Los Angeles",country:"USA",time:"18:00"},{id:5,date:"Jun 13",group:"C",round:"Group Stage",home:"Haiti",away:"Scotland",venue:"Boston",country:"USA",time:"21:00"},{id:6,date:"Jun 13",group:"D",round:"Group Stage",home:"Australia",away:"Türkiye",venue:"Vancouver",country:"Canada",time:"21:00"},{id:7,date:"Jun 13",group:"C",round:"Group Stage",home:"Brazil",away:"Morocco",venue:"New York",country:"USA",time:"18:00"},{id:8,date:"Jun 13",group:"B",round:"Group Stage",home:"Qatar",away:"Switzerland",venue:"San Francisco",country:"USA",time:"12:00"},{id:9,date:"Jun 14",group:"E",round:"Group Stage",home:"Ivory Coast",away:"Ecuador",venue:"Philadelphia",country:"USA",time:"19:00"},{id:10,date:"Jun 14",group:"E",round:"Group Stage",home:"Germany",away:"Curaçao",venue:"Houston",country:"USA",time:"12:00"},{id:11,date:"Jun 14",group:"F",round:"Group Stage",home:"Netherlands",away:"Japan",venue:"Dallas",country:"USA",time:"15:00"},{id:12,date:"Jun 14",group:"F",round:"Group Stage",home:"Sweden",away:"Tunisia",venue:"Monterrey",country:"Mexico",time:"20:00"},{id:13,date:"Jun 15",group:"H",round:"Group Stage",home:"Saudi Arabia",away:"Uruguay",venue:"Miami",country:"USA",time:"18:00"},{id:14,date:"Jun 15",group:"H",round:"Group Stage",home:"Spain",away:"Cape Verde",venue:"Atlanta",country:"USA",time:"12:00"},{id:15,date:"Jun 15",group:"G",round:"Group Stage",home:"Iran",away:"New Zealand",venue:"Los Angeles",country:"USA",time:"18:00"},{id:16,date:"Jun 15",group:"G",round:"Group Stage",home:"Belgium",away:"Egypt",venue:"Seattle",country:"USA",time:"12:00"},{id:17,date:"Jun 16",group:"I",round:"Group Stage",home:"France",away:"Senegal",venue:"New York",country:"USA",time:"15:00"},{id:18,date:"Jun 16",group:"I",round:"Group Stage",home:"Iraq",away:"Norway",venue:"Boston",country:"USA",time:"18:00"},{id:19,date:"Jun 16",group:"J",round:"Group Stage",home:"Argentina",away:"Algeria",venue:"Kansas City",country:"USA",time:"20:00"},{id:20,date:"Jun 16",group:"J",round:"Group Stage",home:"Austria",away:"Jordan",venue:"San Francisco",country:"USA",time:"21:00"},{id:21,date:"Jun 17",group:"L",round:"Group Stage",home:"Ghana",away:"Panama",venue:"Toronto",country:"Canada",time:"19:00"},{id:22,date:"Jun 17",group:"L",round:"Group Stage",home:"England",away:"Croatia",venue:"Dallas",country:"USA",time:"15:00"},{id:23,date:"Jun 17",group:"K",round:"Group Stage",home:"Portugal",away:"DR Congo",venue:"Houston",country:"USA",time:"12:00"},{id:24,date:"Jun 17",group:"K",round:"Group Stage",home:"Uzbekistan",away:"Colombia",venue:"Mexico City",country:"Mexico",time:"20:00"},{id:25,date:"Jun 18",group:"A",round:"Group Stage",home:"Czechia",away:"South Africa",venue:"Atlanta",country:"USA",time:"12:00"},{id:26,date:"Jun 18",group:"B",round:"Group Stage",home:"Switzerland",away:"Bosnia & Herz.",venue:"Los Angeles",country:"USA",time:"12:00"},{id:27,date:"Jun 18",group:"B",round:"Group Stage",home:"Canada",away:"Qatar",venue:"Vancouver",country:"Canada",time:"15:00"},{id:28,date:"Jun 18",group:"A",round:"Group Stage",home:"Mexico",away:"South Korea",venue:"Guadalajara",country:"Mexico",time:"19:00"},{id:29,date:"Jun 19",group:"C",round:"Group Stage",home:"Brazil",away:"Haiti",venue:"Philadelphia",country:"USA",time:"21:00"},{id:30,date:"Jun 19",group:"C",round:"Group Stage",home:"Scotland",away:"Morocco",venue:"Boston",country:"USA",time:"18:00"},{id:31,date:"Jun 19",group:"D",round:"Group Stage",home:"Türkiye",away:"Paraguay",venue:"San Francisco",country:"USA",time:"20:00"},{id:32,date:"Jun 19",group:"D",round:"Group Stage",home:"USA",away:"Australia",venue:"Seattle",country:"USA",time:"12:00"},{id:33,date:"Jun 20",group:"E",round:"Group Stage",home:"Germany",away:"Ivory Coast",venue:"Toronto",country:"Canada",time:"16:00"},{id:34,date:"Jun 20",group:"E",round:"Group Stage",home:"Ecuador",away:"Curaçao",venue:"Kansas City",country:"USA",time:"19:00"},{id:35,date:"Jun 20",group:"F",round:"Group Stage",home:"Netherlands",away:"Sweden",venue:"Houston",country:"USA",time:"12:00"},{id:36,date:"Jun 20",group:"F",round:"Group Stage",home:"Tunisia",away:"Japan",venue:"Monterrey",country:"Mexico",time:"22:00"},{id:37,date:"Jun 21",group:"H",round:"Group Stage",home:"Uruguay",away:"Cape Verde",venue:"Miami",country:"USA",time:"18:00"},{id:38,date:"Jun 21",group:"H",round:"Group Stage",home:"Spain",away:"Saudi Arabia",venue:"Atlanta",country:"USA",time:"12:00"},{id:39,date:"Jun 21",group:"G",round:"Group Stage",home:"Belgium",away:"Iran",venue:"Los Angeles",country:"USA",time:"12:00"},{id:40,date:"Jun 21",group:"G",round:"Group Stage",home:"New Zealand",away:"Egypt",venue:"Vancouver",country:"Canada",time:"18:00"},{id:41,date:"Jun 22",group:"I",round:"Group Stage",home:"Norway",away:"Senegal",venue:"New York",country:"USA",time:"20:00"},{id:42,date:"Jun 22",group:"I",round:"Group Stage",home:"France",away:"Iraq",venue:"Philadelphia",country:"USA",time:"17:00"},{id:43,date:"Jun 22",group:"J",round:"Group Stage",home:"Argentina",away:"Austria",venue:"Dallas",country:"USA",time:"12:00"},{id:44,date:"Jun 22",group:"J",round:"Group Stage",home:"Jordan",away:"Algeria",venue:"San Francisco",country:"USA",time:"20:00"},{id:45,date:"Jun 23",group:"L",round:"Group Stage",home:"England",away:"Ghana",venue:"Boston",country:"USA",time:"16:00"},{id:46,date:"Jun 23",group:"L",round:"Group Stage",home:"Panama",away:"Croatia",venue:"Toronto",country:"Canada",time:"19:00"},{id:47,date:"Jun 23",group:"K",round:"Group Stage",home:"Portugal",away:"Uzbekistan",venue:"Houston",country:"USA",time:"12:00"},{id:48,date:"Jun 23",group:"K",round:"Group Stage",home:"Colombia",away:"DR Congo",venue:"Guadalajara",country:"Mexico",time:"20:00"},{id:49,date:"Jun 24",group:"C",round:"Group Stage",home:"Scotland",away:"Brazil",venue:"Miami",country:"USA",time:"18:00"},{id:50,date:"Jun 24",group:"C",round:"Group Stage",home:"Morocco",away:"Haiti",venue:"Atlanta",country:"USA",time:"18:00"},{id:51,date:"Jun 24",group:"B",round:"Group Stage",home:"Switzerland",away:"Canada",venue:"Vancouver",country:"Canada",time:"12:00"},{id:52,date:"Jun 24",group:"B",round:"Group Stage",home:"Bosnia & Herz.",away:"Qatar",venue:"Seattle",country:"USA",time:"12:00"},{id:53,date:"Jun 24",group:"A",round:"Group Stage",home:"Czechia",away:"Mexico",venue:"Mexico City",country:"Mexico",time:"19:00"},{id:54,date:"Jun 24",group:"A",round:"Group Stage",home:"South Africa",away:"South Korea",venue:"Monterrey",country:"Mexico",time:"19:00"},{id:55,date:"Jun 25",group:"E",round:"Group Stage",home:"Curaçao",away:"Ivory Coast",venue:"Philadelphia",country:"USA",time:"16:00"},{id:56,date:"Jun 25",group:"E",round:"Group Stage",home:"Ecuador",away:"Germany",venue:"New York",country:"USA",time:"16:00"},{id:57,date:"Jun 25",group:"F",round:"Group Stage",home:"Japan",away:"Sweden",venue:"Dallas",country:"USA",time:"18:00"},{id:58,date:"Jun 25",group:"F",round:"Group Stage",home:"Tunisia",away:"Netherlands",venue:"Kansas City",country:"USA",time:"18:00"},{id:59,date:"Jun 25",group:"D",round:"Group Stage",home:"Türkiye",away:"USA",venue:"Los Angeles",country:"USA",time:"19:00"},{id:60,date:"Jun 25",group:"D",round:"Group Stage",home:"Paraguay",away:"Australia",venue:"San Francisco",country:"USA",time:"19:00"},{id:61,date:"Jun 26",group:"I",round:"Group Stage",home:"Norway",away:"France",venue:"Boston",country:"USA",time:"15:00"},{id:62,date:"Jun 26",group:"I",round:"Group Stage",home:"Senegal",away:"Iraq",venue:"Toronto",country:"Canada",time:"15:00"},{id:63,date:"Jun 26",group:"G",round:"Group Stage",home:"Egypt",away:"Iran",venue:"Seattle",country:"USA",time:"20:00"},{id:64,date:"Jun 26",group:"G",round:"Group Stage",home:"New Zealand",away:"Belgium",venue:"Vancouver",country:"Canada",time:"20:00"},{id:65,date:"Jun 26",group:"H",round:"Group Stage",home:"Cape Verde",away:"Saudi Arabia",venue:"Houston",country:"USA",time:"19:00"},{id:66,date:"Jun 26",group:"H",round:"Group Stage",home:"Uruguay",away:"Spain",venue:"Guadalajara",country:"Mexico",time:"18:00"},{id:67,date:"Jun 27",group:"L",round:"Group Stage",home:"Panama",away:"England",venue:"New York",country:"USA",time:"17:00"},{id:68,date:"Jun 27",group:"L",round:"Group Stage",home:"Croatia",away:"Ghana",venue:"Philadelphia",country:"USA",time:"17:00"},{id:69,date:"Jun 27",group:"J",round:"Group Stage",home:"Algeria",away:"Austria",venue:"Kansas City",country:"USA",time:"21:00"},{id:70,date:"Jun 27",group:"J",round:"Group Stage",home:"Jordan",away:"Argentina",venue:"Dallas",country:"USA",time:"21:00"},{id:71,date:"Jun 27",group:"K",round:"Group Stage",home:"Colombia",away:"Portugal",venue:"Miami",country:"USA",time:"19:30"},{id:72,date:"Jun 27",group:"K",round:"Group Stage",home:"DR Congo",away:"Uzbekistan",venue:"Atlanta",country:"USA",time:"19:30"},{id:73,date:"Jun 28",group:"—",round:"Round of 32",home:"2nd Group A",away:"2nd Group B",venue:"Los Angeles",country:"USA",time:"12:00"},{id:74,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group E",away:"Best 3rd",venue:"Boston",country:"USA",time:"16:30"},{id:75,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group F",away:"2nd Group C",venue:"Monterrey",country:"Mexico",time:"19:00"},{id:76,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group C",away:"2nd Group F",venue:"Houston",country:"USA",time:"12:00"},{id:77,date:"Jun 30",group:"—",round:"Round of 32",home:"1st Group I",away:"Best 3rd",venue:"New York",country:"USA",time:"17:00"},{id:78,date:"Jun 30",group:"—",round:"Round of 32",home:"2nd Group E",away:"2nd Group I",venue:"Dallas",country:"USA",time:"12:00"},{id:79,date:"Jun 30",group:"—",round:"Round of 32",home:"1st Group A",away:"Best 3rd",venue:"Mexico City",country:"Mexico",time:"19:00"},{id:80,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group L",away:"Best 3rd",venue:"Atlanta",country:"USA",time:"12:00"},{id:81,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group D",away:"Best 3rd",venue:"San Francisco",country:"USA",time:"17:00"},{id:82,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group G",away:"Best 3rd",venue:"Seattle",country:"USA",time:"13:00"},{id:83,date:"Jul 2",group:"—",round:"Round of 32",home:"2nd Group K",away:"2nd Group L",venue:"Toronto",country:"Canada",time:"19:00"},{id:84,date:"Jul 2",group:"—",round:"Round of 32",home:"1st Group H",away:"2nd Group J",venue:"Los Angeles",country:"USA",time:"12:00"},{id:85,date:"Jul 2",group:"—",round:"Round of 32",home:"1st Group B",away:"Best 3rd",venue:"Vancouver",country:"Canada",time:"20:00"},{id:86,date:"Jul 3",group:"—",round:"Round of 32",home:"1st Group J",away:"2nd Group H",venue:"Miami",country:"USA",time:"18:00"},{id:87,date:"Jul 3",group:"—",round:"Round of 32",home:"1st Group K",away:"Best 3rd",venue:"Kansas City",country:"USA",time:"20:30"},{id:88,date:"Jul 3",group:"—",round:"Round of 32",home:"2nd Group D",away:"2nd Group G",venue:"Dallas",country:"USA",time:"13:00"},{id:89,date:"Jul 4",group:"—",round:"Round of 16",home:"W M74",away:"W M77",venue:"Philadelphia",country:"USA",time:"17:00"},{id:90,date:"Jul 4",group:"—",round:"Round of 16",home:"W M73",away:"W M75",venue:"Houston",country:"USA",time:"12:00"},{id:91,date:"Jul 5",group:"—",round:"Round of 16",home:"W M76",away:"W M78",venue:"New York",country:"USA",time:"16:00"},{id:92,date:"Jul 5",group:"—",round:"Round of 16",home:"W M79",away:"W M80",venue:"Mexico City",country:"Mexico",time:"18:00"},{id:93,date:"Jul 6",group:"—",round:"Round of 16",home:"W M83",away:"W M84",venue:"Dallas",country:"USA",time:"14:00"},{id:94,date:"Jul 6",group:"—",round:"Round of 16",home:"W M81",away:"W M82",venue:"Seattle",country:"USA",time:"17:00"},{id:95,date:"Jul 7",group:"—",round:"Round of 16",home:"W M86",away:"W M88",venue:"Atlanta",country:"USA",time:"12:00"},{id:96,date:"Jul 7",group:"—",round:"Round of 16",home:"W M85",away:"W M87",venue:"Vancouver",country:"Canada",time:"13:00"},{id:97,date:"Jul 9",group:"—",round:"Quarter-final",home:"W M89",away:"W M90",venue:"Boston",country:"USA",time:"16:00"},{id:98,date:"Jul 10",group:"—",round:"Quarter-final",home:"W M93",away:"W M94",venue:"Los Angeles",country:"USA",time:"12:00"},{id:99,date:"Jul 11",group:"—",round:"Quarter-final",home:"W M91",away:"W M92",venue:"Miami",country:"USA",time:"17:00"},{id:100,date:"Jul 11",group:"—",round:"Quarter-final",home:"W M95",away:"W M96",venue:"Kansas City",country:"USA",time:"20:00"},{id:101,date:"Jul 14",group:"—",round:"Semi-final",home:"W M97",away:"W M98",venue:"Dallas",country:"USA",time:"14:00"},{id:102,date:"Jul 15",group:"—",round:"Semi-final",home:"W M99",away:"W M100",venue:"Atlanta",country:"USA",time:"15:00"},{id:103,date:"Jul 18",group:"—",round:"Final",home:"3rd Place",away:"3rd Place",venue:"Miami",country:"USA",time:"17:00"},{id:104,date:"Jul 19",group:"—",round:"Final",home:"Winner SF1",away:"Winner SF2",venue:"New York",country:"USA",time:"15:00"}];
 
 const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
 
-const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Robin Risser (Leverkusen)","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Dayot Upamecano (Bayern)","Jules Koundé (Barcelona)","Lucas Hernandez (Bayern)","Theo Hernandez (AC Milan)","Malo Gusto (Chelsea)","Ibrahima Konaté (Liverpool)","Maxence Lacroix (Crystal Palace)","Lucas Digne (Aston Villa)"],mid:["N'Golo Kanté (Al-Ittihad)","Aurélien Tchouaméni (Real Madrid)","Adrien Rabiot (Marseille)","Warren Zaïre-Emery (PSG)","Manu Koné (Real Madrid)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★","Michael Olise (Bayern)★","Désiré Doué (PSG)★","Bradley Barcola (PSG)","Marcus Thuram (Inter Milan)","Rayan Cherki (Man City)","Jean-Philippe Mateta (Crystal Palace)"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de la Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)","Álex Remiro (Real Sociedad)"],def:["Dani Carvajal (Real Madrid)","Alejandro Balde (Barcelona)","Pau Cubarsí (Barcelona)","Robin Le Normand (Atletico)","Dani Vivian (Athletic Bilbao)","Mikel Merino (Arsenal)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★","Fabián Ruiz (PSG)","Dani Olmo (Barcelona)","Martín Zubimendi (Arsenal)","Aleix García (Man City)"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)","Álvaro Morata (Atletico)","Ferran Torres (Barcelona)","Mikel Oyarzabal (Sociedad)","Ayoze Pérez (Villarreal)"]},Argentina:{rank:3,flag:"🇦🇷",formation:"4-3-3",coach:"Lionel Scaloni",gk:["Emiliano Martínez (Aston Villa)★","Gerónimo Rulli (Atletico)","Walter Benítez (PSV)"],def:["Cristian Romero (Tottenham)","Lisandro Martínez (Man United)","Nicolás Otamendi (Benfica)","Nahuel Molina (Atletico)","Marcos Acuña (Sevilla)","Nicolás Tagliafico (Lyon)"],mid:["Rodrigo De Paul (Atletico)","Enzo Fernandez (Chelsea)","Alexis Mac Allister (Liverpool)","Leandro Paredes (Roma)","Giovani Lo Celso (Villarreal)"],fwd:["Lionel Messi (Inter Miami)★","Lautaro Martínez (Inter Milan)★","Julián Álvarez (Atletico)★","Paulo Dybala (Roma)","Ángel Di María (Benfica)","Nico Paz (Como)"]},Brazil:{rank:6,flag:"🇧🇷",formation:"4-2-3-1",coach:"Carlo Ancelotti",gk:["Alisson (Liverpool)","Bento (Al-Qadsiah)","Weverton (Palmeiras)"],def:["Danilo (Juventus)","Éder Militão (Real Madrid)","Marquinhos (PSG)","Gabriel Magalhães (Arsenal)","Guilherme Arana (Atletico MG)","Vanderson (Monaco)"],mid:["Bruno Guimarães (Newcastle)","Casemiro (Man United)","Gerson (Marseille)","André (Fulham)"],fwd:["Vinícius Júnior (Real Madrid)★","Raphinha (Barcelona)★","Neymar (Santos)","Rodrygo (Real Madrid)","Endrick (Lyon)","Gabriel Martinelli (Arsenal)","Matheus Cunha (Man United)"]},England:{rank:4,flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",formation:"4-3-3",coach:"Thomas Tuchel",gk:["Jordan Pickford (Everton)","Dean Henderson (Crystal Palace)","Nick Pope (Newcastle)"],def:["Kyle Walker (Bayern)","John Stones (Man City)","Marc Guéhi (Crystal Palace)","Trent Alexander-Arnold (Liverpool)","Luke Shaw (Man United)","Levi Colwill (Chelsea)"],mid:["Declan Rice (Arsenal)★","Jude Bellingham (Real Madrid)★","Kobbie Mainoo (Man United)","Elliot Anderson (Nottm Forest)","Morgan Rogers (Aston Villa)"],fwd:["Harry Kane (Bayern Munich)★","Bukayo Saka (Arsenal)","Marcus Rashford (Man United)","Ollie Watkins (Aston Villa)","Anthony Gordon (Newcastle)","Noni Madueke (Arsenal)"]},Portugal:{rank:5,flag:"🇵🇹",formation:"4-3-3",coach:"Roberto Martínez",gk:["Diogo Costa (Porto)","Rui Patrício (Roma)","José Sá (Wolves)"],def:["Rúben Dias (Man City)","António Silva (Benfica)","Gonçalo Inácio (Sporting CP)","Nuno Mendes (PSG)","Diogo Dalot (Man United)","João Cancelo (Barcelona)"],mid:["Vitinha (PSG)★","João Neves (PSG)★","Bruno Fernandes (Man United)★","Bernardo Silva (Man City)","Rúben Neves (Al-Hilal)"],fwd:["Cristiano Ronaldo (Al-Nassr)★","Rafael Leão (AC Milan)","Pedro Neto (Chelsea)","Diogo Jota (Liverpool)","Gonçalo Ramos (PSG)"]},Germany:{rank:9,flag:"🇩🇪",formation:"4-2-3-1",coach:"Julian Nagelsmann",gk:["Manuel Neuer (Bayern)","Oliver Baumann (Hoffenheim)","Alexander Nübel (Stuttgart)"],def:["Joshua Kimmich (Bayern)★","Antonio Rüdiger (Real Madrid)","Jonathan Tah (Bayern)","Nico Schlotterbeck (Dortmund)","David Raum (RB Leipzig)","Waldemar Anton (Stuttgart)"],mid:["Robert Andrich (Leverkusen)","Ilkay Gündogan (Barcelona)","Florian Wirtz (Bayern)★","Leroy Sané (Bayern)"],fwd:["Jamal Musiala (Bayern)★","Kai Havertz (Arsenal)","Thomas Müller (Bayern)","Niclas Füllkrug (West Ham)","Serge Gnabry (Bayern)"]},Netherlands:{rank:7,flag:"🇳🇱",formation:"4-3-3",coach:"Ronald Koeman",gk:["Mark Flekken (Brentford)","Bart Verbruggen (Brighton)","Remko Pasveer (Ajax)"],def:["Virgil van Dijk (Liverpool)★","Stefan de Vrij (Inter Milan)","Denzel Dumfries (Inter Milan)","Matthijs de Ligt (Man United)","Nathan Aké (Man City)","Jeremie Frimpong (Liverpool)"],mid:["Frenkie de Jong (Barcelona)","Tijjani Reijnders (AC Milan)","Ryan Gravenberch (Liverpool)","Xavi Simons (RB Leipzig)"],fwd:["Cody Gakpo (Liverpool)","Memphis Depay (Atletico)","Donyell Malen (Dortmund)","Brian Brobbey (Ajax)","Noa Lang (Atletico)"]},Belgium:{rank:8,flag:"🇧🇪",formation:"4-2-3-1",coach:"Domenico Tedesco",gk:["Thibaut Courtois (Real Madrid)★","Thomas Kaminski (Tottenham)","Maarten Vandevoordt (RB Leipzig)"],def:["Wout Faes (Leicester)","Zeno Debast (Sporting CP)","Timothy Castagne (Fulham)","Arthur Theate (Rennes)","Jan Vertonghen (Anderlecht)"],mid:["Kevin De Bruyne (Man City)★","Charles De Ketelaere (Atalanta)","Youri Tielemans (Aston Villa)","Arthur Vermeeren (Atletico)"],fwd:["Romelu Lukaku (Napoli)","Leandro Trossard (Arsenal)","Jeremy Doku (Man City)","Loïs Openda (RB Leipzig)","Yannick Carrasco (Atletico)"]},Morocco:{rank:14,flag:"🇲🇦",formation:"4-3-3",coach:"Walid Regragui",gk:["Yassine Bounou (Al-Hilal)","Munir El Kajoui (RS Berkane)","Ahmed Tagnaouti (AS FAR)"],def:["Achraf Hakimi (PSG)★","Nayef Aguerd (Marseille)","Romain Saïss (Beşiktaş)","Noussair Mazraoui (Man United)","Chadi Riad (Crystal Palace)","Issa Diop (Fulham)"],mid:["Sofyan Amrabat (Real Betis)","Azzedine Ounahi (Girone)","Bilal El Khannous (Stuttgart)","Hakim Ziyech (Galatasaray)"],fwd:["Brahim Díaz (Real Madrid)","Ayoub El Kaabi (Olympiacos)","Soufiane Rahimi (Al-Ain)","Abdessamad Ezzalzouli (Real Betis)"]},USA:{rank:15,flag:"🇺🇸",formation:"4-3-3",coach:"Mauricio Pochettino",gk:["Matt Turner (Crystal Palace)","Patrick Schulte (Columbus)","Ethan Horvath (Cardiff)"],def:["Tim Ream (Charlotte)","Chris Richards (Crystal Palace)","Miles Robinson (FC Cincinnati)","Antonee Robinson (Fulham)","Joe Scally (Gladbach)"],mid:["Weston McKennie (Juventus)","Tyler Adams (Bournemouth)","Yunus Musah (AC Milan)","Gio Reyna (Dortmund)","Luca de la Torre (Celta Vigo)"],fwd:["Christian Pulisic (AC Milan)★","Ricardo Pepi (PSV)","Folarin Balogun (Monaco)","Tim Weah (Juventus)","Josh Sargent (Norwich)"]},Mexico:{rank:16,flag:"🇲🇽",formation:"4-3-3",coach:"Javier Aguirre",gk:["Guillermo Ochoa (Salernitana)","Julio González (Tigres)","Luis Malagón (América)"],def:["César Montes (Espanyol)","Johan Vásquez (Cremonese)","Héctor Moreno (LAFC)","Jorge Sánchez (Ajax)","Gerardo Arteaga (Rennes)","Edson Álvarez (West Ham)"],mid:["Héctor Herrera (Monterrey)","Roberto Alvarado (Guadalajara)","Orbelin Pineda (AEK Athens)","Carlos Antuna (Guadalajara)"],fwd:["Hirving Lozano (PSV)","Henry Martín (América)","Raúl Jiménez (Fulham)","Santiago Giménez (AC Milan)★","Rodolfo Pizarro (América)"]}};
+const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Robin Risser (Leverkusen)","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Dayot Upamecano (Bayern)","Jules Koundé (Barcelona)","Lucas Hernandez (Bayern)","Theo Hernandez (AC Milan)","Malo Gusto (Chelsea)","Ibrahima Konaté (Liverpool)","Maxence Lacroix (Crystal Palace)","Lucas Digne (Aston Villa)"],mid:["N'Golo Kanté (Al-Ittihad)","Aurélien Tchouaméni (Real Madrid)","Adrien Rabiot (Marseille)","Warren Zaïre-Emery (PSG)","Manu Koné (Real Madrid)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★","Michael Olise (Bayern)★","Désiré Doué (PSG)★","Bradley Barcola (PSG)","Marcus Thuram (Inter Milan)","Rayan Cherki (Man City)","Jean-Philippe Mateta (Crystal Palace)"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de la Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)","Álex Remiro (Real Sociedad)"],def:["Dani Carvajal (Real Madrid)","Alejandro Balde (Barcelona)","Pau Cubarsí (Barcelona)","Robin Le Normand (Atletico)","Dani Vivian (Athletic Bilbao)","Mikel Merino (Arsenal)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★","Fabián Ruiz (PSG)","Dani Olmo (Barcelona)","Martín Zubimendi (Arsenal)","Aleix García (Man City)"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)","Álvaro Morata (Atletico)","Ferran Torres (Barcelona)","Mikel Oyarzabal (Sociedad)","Ayoze Pérez (Villarreal)"]},Argentina:{rank:3,flag:"🇦🇷",formation:"4-3-3",coach:"Lionel Scaloni",gk:["Emiliano Martínez (Aston Villa)★","Gerónimo Rulli (Atletico)","Walter Benítez (PSV)"],def:["Cristian Romero (Tottenham)","Lisandro Martínez (Man United)","Nicolás Otamendi (Benfica)","Nahuel Molina (Atletico)","Marcos Acuña (Sevilla)","Nicolás Tagliafico (Lyon)"],mid:["Rodrigo De Paul (Atletico)","Enzo Fernandez (Chelsea)","Alexis Mac Allister (Liverpool)","Leandro Paredes (Roma)","Giovani Lo Celso (Villarreal)"],fwd:["Lionel Messi (Inter Miami)★","Lautaro Martínez (Inter Milan)★","Julián Álvarez (Atletico)★","Paulo Dybala (Roma)","Ángel Di María (Benfica)","Nico Paz (Como)"]},Brazil:{rank:6,flag:"🇧🇷",formation:"4-2-3-1",coach:"Carlo Ancelotti",gk:["Alisson (Liverpool)","Bento (Al-Qadsiah)","Weverton (Palmeiras)"],def:["Danilo (Juventus)","Éder Militão (Real Madrid)","Marquinhos (PSG)","Gabriel Magalhães (Arsenal)","Guilherme Arana (Atletico MG)","Vanderson (Monaco)"],mid:["Bruno Guimarães (Newcastle)","Casemiro (Man United)","Gerson (Marseille)","André (Fulham)"],fwd:["Vinícius Júnior (Real Madrid)★","Raphinha (Barcelona)★","Neymar (Santos)","Rodrygo (Real Madrid)","Endrick (Lyon)","Gabriel Martinelli (Arsenal)","Matheus Cunha (Man United)"]},England:{rank:4,flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",formation:"4-3-3",coach:"Thomas Tuchel",gk:["Jordan Pickford (Everton)","Dean Henderson (Crystal Palace)","Nick Pope (Newcastle)"],def:["Kyle Walker (Bayern)","John Stones (Man City)","Marc Guéhi (Crystal Palace)","Trent Alexander-Arnold (Liverpool)","Luke Shaw (Man United)","Levi Colwill (Chelsea)"],mid:["Declan Rice (Arsenal)★","Jude Bellingham (Real Madrid)★","Kobbie Mainoo (Man United)","Elliot Anderson (Nottm Forest)","Morgan Rogers (Aston Villa)"],fwd:["Harry Kane (Bayern Munich)★","Bukayo Saka (Arsenal)","Marcus Rashford (Man United)","Ollie Watkins (Aston Villa)","Anthony Gordon (Newcastle)","Noni Madueke (Arsenal)"]},Portugal:{rank:5,flag:"🇵🇹",formation:"4-3-3",coach:"Roberto Martínez",gk:["Diogo Costa (Porto)","Rui Patrício (Roma)","José Sá (Wolves)"],def:["Rúben Dias (Man City)","António Silva (Benfica)","Gonçalo Inácio (Sporting CP)","Nuno Mendes (PSG)","Diogo Dalot (Man United)","João Cancelo (Barcelona)"],mid:["Vitinha (PSG)★","João Neves (PSG)★","Bruno Fernandes (Man United)★","Bernardo Silva (Man City)","Rúben Neves (Al-Hilal)"],fwd:["Cristiano Ronaldo (Al-Nassr)★","Rafael Leão (AC Milan)","Pedro Neto (Chelsea)","Diogo Jota (Liverpool)","Gonçalo Ramos (PSG)"]},Germany:{rank:9,flag:"🇩🇪",formation:"4-2-3-1",coach:"Julian Nagelsmann",gk:["Manuel Neuer (Bayern)","Oliver Baumann (Hoffenheim)","Alexander Nübel (Stuttgart)"],def:["Joshua Kimmich (Bayern)★","Antonio Rüdiger (Real Madrid)","Jonathan Tah (Bayern)","Nico Schlotback (Dortmund)","David Raum (RB Leipzig)","Waldemar Anton (Stuttgart)"],mid:["Robert Andrich (Leverkusen)","Ilkay Gündogan (Barcelona)","Florian Wirtz (Bayern)★","Leroy Sané (Bayern)"],fwd:["Jamal Musiala (Bayern)★","Kai Havertz (Arsenal)","Thomas Müller (Bayern)","Niclas Füllkrug (West Ham)","Serge Gnabry (Bayern)"]},Netherlands:{rank:7,flag:"🇳🇱",formation:"4-3-3",coach:"Ronald Koeman",gk:["Mark Flekken (Brentford)","Bart Verbruggen (Brighton)","Remko Pasveer (Ajax)"],def:["Virgil van Dijk (Liverpool)★","Stefan de Vrij (Inter Milan)","Denzel Dumfries (Inter Milan)","Matthijs de Ligt (Man United)","Nathan Aké (Man City)","Jeremie Frimpong (Liverpool)"],mid:["Frenkie de Jong (Barcelona)","Tijjani Reijnders (AC Milan)","Ryan Gravenberch (Liverpool)","Xavi Simons (RB Leipzig)"],fwd:["Cody Gakpo (Liverpool)","Memphis Depay (Atletico)","Donyell Malen (Dortmund)","Brian Brobbey (Ajax)","Noa Lang (Atletico)"]},Belgium:{rank:8,flag:"🇧🇪",formation:"4-2-3-1",coach:"Domenico Tedesco",gk:["Thibaut Courtois (Real Madrid)★","Thomas Kaminski (Tottenham)","Maarten Vandevoordt (RB Leipzig)"],def:["Wout Faes (Leicester)","Zeno Debast (Sporting CP)","Timothy Castagne (Fulham)","Arthur Theate (Rennes)","Jan Vertonghen (Anderlecht)"],mid:["Kevin De Bruyne (Man City)★","Charles De Ketelaere (Atalanta)","Youri Tielemans (Aston Villa)","Arthur Vermeeren (Atletico)"],fwd:["Romelu Lukaku (Napoli)","Leandro Trossard (Arsenal)","Jeremy Doku (Man City)","Loïs Openda (RB Leipzig)","Yannick Carrasco (Atletico)"]},Morocco:{rank:14,flag:"🇲🇦",formation:"4-3-3",coach:"Walid Regragui",gk:["Yassine Bounou (Al-Hilal)","Munir El Kajoui (RS Berkane)","Ahmed Tagnaouti (AS FAR)"],def:["Achraf Hakimi (PSG)★","Nayef Aguerd (Marseille)","Romain Saïss (Beşiktaş)","Noussair Mazraoui (Man United)","Chadi Riad (Crystal Palace)","Issa Diop (Fulham)"],mid:["Sofyan Amrabat (Real Betis)","Azzedine Ounahi (Girone)","Bilal El Khannous (Stuttgart)","Hakim Ziyech (Galatasaray)"],fwd:["Brahim Díaz (Real Madrid)","Ayoub El Kaabi (Olympiacos)","Soufiane Rahimi (Al-Ain)","Abdessamad Ezzalzouli (Real Betis)"]},USA:{rank:15,flag:"🇺🇸",formation:"4-3-3",coach:"Mauricio Pochettino",gk:["Matt Turner (Crystal Palace)","Patrick Schulte (Columbus)","Ethan Horvath (Cardiff)"],def:["Tim Ream (Charlotte)","Chris Richards (Crystal Palace)","Miles Robinson (FC Cincinnati)","Antonee Robinson (Fulham)","Joe Scally (Gladbach)"],mid:["Weston McKennie (Juventus)","Tyler Adams (Bournemouth)","Yunus Musah (AC Milan)","Gio Reyna (Dortmund)","Luca de the Torre (Celta Vigo)"],fwd:["Christian Pulisic (AC Milan)★","Ricardo Pepi (PSV)","Folarin Balogun (Monaco)","Tim Weah (Juventus)","Josh Sargent (Norwich)"]},Mexico:{rank:16,flag:"🇲🇽",formation:"4-3-3",coach:"Javier Aguirre",gk:["Guillermo Ochoa (Salernitana)","Julio González (Tigres)","Luis Malagón (América)"],def:["César Montes (Espanyol)","Johan Vásquez (Cremonese)","Héctor Moreno (LAFC)","Jorge Sánchez (Ajax)","Gerardo Arteaga (Rennes)","Edson Álvarez (West Ham)"],mid:["Héctor Herrera (Monterrey)","Roberto Alvarado (Guadalajara)","Orbelin Pineda (AEK Athens)","Carlos Antuna (Guadalajara)"],fwd:["Hirving Lozano (PSV)","Henry Martín (América)","Raúl Jiménez (Fulham)","Santiago Giménez (AC Milan)★","Rodolfo Pizarro (América)"]}};
 
 const ODDS=[{nation:"Spain",flag:"🇪🇸",odds:"+450",prob:18.2,tier:1},{nation:"France",flag:"🇫🇷",odds:"+480",prob:17.2,tier:1},{nation:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",odds:"+650",prob:13.3,tier:1},{nation:"Brazil",flag:"🇧🇷",odds:"+750",prob:11.8,tier:1},{nation:"Argentina",flag:"🇦🇷",odds:"+800",prob:11.1,tier:2},{nation:"Portugal",flag:"🇵🇹",odds:"+1100",prob:8.3,tier:2},{nation:"Germany",flag:"🇩🇪",odds:"+1200",prob:7.7,tier:2},{nation:"Netherlands",flag:"🇳🇱",odds:"+1600",prob:5.9,tier:2},{nation:"Morocco",flag:"🇲🇦",odds:"+2500",prob:3.8,tier:3},{nation:"Belgium",flag:"🇧🇪",odds:"+2800",prob:3.4,tier:3},{nation:"Uruguay",flag:"🇺🇾",odds:"+3000",prob:3.2,tier:3},{nation:"Colombia",flag:"🇨🇴",odds:"+3500",prob:2.8,tier:3},{nation:"USA",flag:"🇺🇸",odds:"+5000",prob:2.0,tier:3},{nation:"Mexico",flag:"🇲🇽",odds:"+6000",prob:1.6,tier:3},{nation:"Japan",flag:"🇯🇵",odds:"+7500",prob:1.3,tier:3}];
 
+// Core Reactive Score Engine State Tracker
 let scores={};
 
 function show(id,btn){
@@ -379,11 +400,30 @@ function badgeClass(round){
   return 'badge-f';
 }
 
+// Track input updates, record metrics, refresh structural models
+function updateScore(matchId, type, val) {
+  if (!scores[matchId]) {
+    scores[matchId] = [null, null];
+  }
+  
+  if(val === "") {
+    scores[matchId][type === 'home' ? 0 : 1] = null;
+    if(scores[matchId][0] === null && scores[matchId][1] === null) {
+      delete scores[matchId];
+    }
+  } else {
+    scores[matchId][type === 'home' ? 0 : 1] = parseInt(val, 10);
+  }
+  
+  renderStandings();
+}
+
 function renderFixtures(){
   const round=document.getElementById('roundFilter').value;
   const grp=document.getElementById('groupFilter').value;
   const venue=document.getElementById('venueFilter').value;
   const search=document.getElementById('teamSearch').value.toLowerCase();
+  
   let filtered=FIXTURES.filter(f=>{
     if(round!=='all'&&!f.round.includes(round)) return false;
     if(grp!=='all'&&f.group!==grp) return false;
@@ -391,13 +431,44 @@ function renderFixtures(){
     if(search&&!f.home.toLowerCase().includes(search)&&!f.away.toLowerCase().includes(search)) return false;
     return true;
   });
+  
   let lastDate='',html='';
   filtered.forEach(f=>{
     if(f.date!==lastDate){html+=`<div class="sec-label">${f.date}</div>`;lastDate=f.date;}
     const bc=badgeClass(f.round);
     const bl=f.group!=='—'?`Group ${f.group}`:f.round;
-    html+=`<div class="match-card"><div class="match-no">#${f.id}</div><span class="match-badge ${bc}">${bl}</span><div class="match-teams">${f.home}<span class="match-vs">vs</span>${f.away}</div><div class="match-meta">${f.time} local<div class="match-venue">📍 ${f.venue} · ${f.country}</div></div></div>`;
+    
+    // Check for existing track rows
+    const scoreHome = (scores[f.id] && scores[f.id][0] !== null) ? scores[f.id][0] : "";
+    const scoreAway = (scores[f.id] && scores[f.id][1] !== null) ? scores[f.id][1] : "";
+    
+    // Check if round structural constraints permit active inputs
+    const isGroup = f.round === "Group Stage";
+
+    html+=`
+      <div class="match-card">
+        <div class="match-no">#${f.id}</div>
+        <span class="match-badge ${bc}">${bl}</span>
+        
+        <div class="match-engine">
+          <div class="engine-team home-align">${f.home}</div>
+          <input type="number" min="0" class="score-input" value="${scoreHome}" 
+            ${!isGroup ? 'disabled placeholder="-"' : ''} 
+            oninput="updateScore(${f.id}, 'home', this.value)">
+          <div class="engine-vs">vs</div>
+          <input type="number" min="0" class="score-input" value="${scoreAway}" 
+            ${!isGroup ? 'disabled placeholder="-"' : ''} 
+            oninput="updateScore(${f.id}, 'away', this.value)">
+          <div class="engine-team away-align">${f.away}</div>
+        </div>
+
+        <div class="match-meta">
+          ${f.time} local
+          <div class="match-venue">📍 ${f.venue} · ${f.country}</div>
+        </div>
+      </div>`;
   });
+  
   if(!html) html='<p style="color:var(--text3);padding:1.5rem 0;font-size:13px">No matches found for the selected filters.</p>';
   document.getElementById('fixtureList').innerHTML=html;
 }
@@ -405,35 +476,59 @@ function renderFixtures(){
 function renderStandings(){
   const grid=document.getElementById('standingsGrid');
   grid.innerHTML='';
+  
   Object.entries(GROUP_TEAMS).forEach(([grp,teams])=>{
     const stats=teams.map(t=>{
-      let w=0,d=0,l=0,gf=0,ga=0;
+      let w=0,d=0,l=0,gf=0,ga=0,p=0;
       FIXTURES.filter(f=>f.group===grp&&f.round==="Group Stage").forEach(f=>{
         const s=scores[`${f.id}`];
-        if(!s) return;
-        const [sh,sa]=s;
-        if(f.home===t.name){gf+=sh;ga+=sa;if(sh>sa)w++;else if(sh===sa)d++;else l++;}
-        if(f.away===t.name){gf+=sa;ga+=sh;if(sa>sh)w++;else if(sh===sa)d++;else l++;}
+        if(!s || s[0] === null || s[1] === null) return; // Only process complete data lines
+        
+        const sh=s[0];
+        const sa=s[1];
+        
+        if(f.home===t.name){
+          gf+=sh; ga+=sa; p++;
+          if(sh>sa)w++; else if(sh===sa)d++; else l++;
+        }
+        if(f.away===t.name){
+          gf+=sa; ga+=sh; p++;
+          if(sa>sh)w++; else if(sh===sa)d++; else l++;
+        }
       });
-      return{...t,w,d,l,gf,ga,gd:gf-ga,pts:w*3+d};
+      return{...t,p,w,d,l,gf,ga,gd:gf-ga,pts:w*3+d};
     }).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+    
     const div=document.createElement('div');
     div.className='group-card';
     div.innerHTML=`<div class="group-card-head">Group ${grp}<div class="cols"><span>P</span><span>GD</span><span>Pts</span></div></div>`+
-      stats.map((t,i)=>`<div class="grow ${i===2?'third':''}">`+
-        `<div class="gpos">${i+1}</div><div class="gflag">${t.flag}</div>`+
-        `<div class="gname">${t.name}</div><div class="gcols"><span>${t.w+t.d+t.l}</span><span>${t.gd>=0?'+':''}${t.gd}</span></div>`+
-        `<div class="gpts">${t.pts}</div></div>`).join('');
+      stats.map((t,i)=>{
+        let qualClass = '';
+        if(i < 2) qualClass = 'qualify';
+        else if(i === 2) qualClass = 'third';
+        
+        return `<div class="grow ${qualClass}">`+
+          `<div class="gpos">${i+1}</div><div class="gflag">${t.flag}</div>`+
+          `<div class="gname">${t.name}</div>`+
+          `<div class="gcols"><span>${t.p}</span><span>${t.gd>=0?'+':''}${t.gd}</span></div>`+
+          `<div class="gpts">${t.pts}</div></div>`;
+      }).join('');
     grid.appendChild(div);
   });
 }
 
-function resetStandings(){scores={};renderStandings();}
+function resetStandings(){
+  scores={};
+  renderFixtures();
+  renderStandings();
+}
+
 function randomResults(){
   FIXTURES.filter(f=>f.round==="Group Stage"&&f.group!=='—').forEach(f=>{
-    const g=[0,1,1,2,2,3,3,4];
-    scores[`${f.id}`]=[g[Math.floor(Math.random()*g.length)],g[Math.floor(Math.random()*g.length)]];
+    const pool=[0,0,1,1,1,2,2,3,3,4];
+    scores[`${f.id}`]=[pool[Math.floor(Math.random()*pool.length)],pool[Math.floor(Math.random()*pool.length)]];
   });
+  renderFixtures();
   renderStandings();
 }
 
@@ -500,6 +595,7 @@ function drawOddsChart(){
   });
 }
 
+// Run Initializations
 renderFixtures();
 renderStandings();
 initSquads();
