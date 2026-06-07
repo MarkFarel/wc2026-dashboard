@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026 FIFA World Cup Live Dashboard</title>
+<title>2026 FIFA World Cup Fixture Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -79,6 +79,15 @@
   .section { display: none; }
   .section.active { display: block; }
 
+  /* METRICS ROW */
+  .metrics-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .metric {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); padding: .75rem 1rem; flex: 1; min-width: 100px;
+  }
+  .metric-val { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: var(--gold2); }
+  .metric-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+
   /* FILTERS & TOOLS */
   .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: .9rem; align-items: center; }
   .filter-row select, .filter-row input {
@@ -110,7 +119,7 @@
   }
   .sec-label:first-child { border-top: none; margin-top: 0; }
 
-  /* FIXTURES WITH BOXES */
+  /* FIXTURES WITH SCORE BOXES */
   .match-card {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: var(--r); padding: 10px 14px;
@@ -132,13 +141,13 @@
   .badge-sf { background: rgba(239,68,68,.18); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
   .badge-f { background: rgba(245,166,35,.35); color: var(--gold2); border: 1px solid var(--gold); }
 
+  /* Rebuilt interactive engine elements */
   .match-engine {
     display: flex; align-items: center; justify-content: center;
-    flex: 1; min-width: 340px; gap: 8px;
+    flex: 1; min-width: 280px; gap: 8px;
   }
   .engine-team {
-    font-size: 13px; font-weight: 500; width: 38%;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 13px; font-weight: 500; width: 42%;
   }
   .engine-team.home-align { text-align: right; }
   .engine-team.away-align { text-align: left; }
@@ -156,9 +165,6 @@
 
   .engine-vs { color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; width: 16px; text-align: center; }
 
-  .pens-wrapper { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: var(--gold); font-weight: bold; }
-  .pens-input { width: 26px; height: 22px; background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.3); border-radius: 3px; color: var(--gold2); font-size: 12px; text-align: center; font-family: 'Barlow Condensed', sans-serif; }
-
   .match-meta { font-size: 11px; color: var(--text2); text-align: right; min-width: 140px; margin-left: auto; }
   .match-venue { font-size: 10px; color: var(--text3); margin-top: 1px; }
 
@@ -173,7 +179,10 @@
     display: flex; justify-content: space-between; align-items: center;
   }
   .group-card-head .cols { display: flex; gap: 14px; font-size: 10px; color: var(--text3); }
-  .grow { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-top: 1px solid var(--border); font-size: 12px; }
+  .grow {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; border-top: 1px solid var(--border); font-size: 12px;
+  }
   .grow.qualify { border-left: 3px solid var(--blue); }
   .grow.third { border-left: 3px dashed var(--gold); }
   .gpos { font-size: 10px; color: var(--text3); width: 12px; font-family: 'Barlow Condensed', sans-serif; }
@@ -183,20 +192,48 @@
   .gcols span { width: 16px; text-align: center; }
   .gpts { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold2); width: 22px; text-align: right; }
 
-  /* EXTENSIONS */
+  /* SQUADS */
   .nation-select-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
-  .nation-btn { font-size: 13px; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text2); cursor: pointer; transition: all .15s; font-family: 'Barlow', sans-serif; }
+  .nation-btn {
+    font-size: 13px; padding: 5px 12px; border-radius: 6px;
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--text2); cursor: pointer; transition: all .15s;
+    font-family: 'Barlow', sans-serif;
+  }
   .nation-btn.active { background: var(--gold); color: #0a0f1e; border-color: var(--gold); font-weight: 600; }
-  .squad-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: .9rem; padding: .7rem 1rem; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); }
+  .nation-btn:hover:not(.active) { border-color: var(--border2); background: var(--bg4); color: var(--text); }
+  .squad-meta {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: .9rem;
+    padding: .7rem 1rem; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--r);
+  }
   .squad-meta-item { font-size: 12px; color: var(--text2); }
   .squad-meta-item strong { color: var(--text); font-weight: 600; }
   .pos-section { margin-bottom: 1rem; }
-  .pos-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-bottom: 6px; }
-  .player-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border2); background: var(--bg3); color: var(--text); margin: 2px; }
+  .pos-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .player-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; padding: 4px 10px;
+    border-radius: 99px; border: 1px solid var(--border2);
+    background: var(--bg3); color: var(--text);
+    margin: 2px; transition: all .15s;
+  }
   .player-pill .pclub { font-size: 10px; color: var(--text3); }
   .player-pill.star { border-color: rgba(245,166,35,.5); background: rgba(245,166,35,.08); color: var(--gold2); }
+  .player-pill.star .pclub { color: rgba(245,166,35,.6); }
+
+  /* ODDS */
   .odds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 8px; margin-bottom: .75rem; }
-  .odds-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rl); padding: 12px 14px; }
+  .odds-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--rl); padding: 12px 14px; transition: border-color .15s;
+  }
+  .odds-card:hover { border-color: var(--border2); }
   .odds-card.fav { border-color: rgba(245,166,35,.4); }
   .odds-flag { font-size: 24px; margin-bottom: 5px; }
   .odds-name { font-size: 13px; font-weight: 600; color: var(--text); }
@@ -204,11 +241,21 @@
   .odds-prob { font-size: 11px; color: var(--text2); }
   .odds-bar-wrap { height: 3px; background: var(--bg3); border-radius: 99px; margin-top: 8px; overflow: hidden; }
   .odds-bar { height: 3px; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--teal)); }
-  .tier-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin: 1rem 0 .5rem; }
+  .tier-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text3);
+    margin: 1rem 0 .5rem;
+  }
   .chart-outer { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rl); padding: 1rem; margin-top: .75rem; }
   .chart-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .75rem; }
 
-  @media (max-width: 900px) {
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+  @media (max-width: 768px) {
     .match-card { flex-direction: column; align-items: flex-start; gap: 8px; }
     .match-engine { width: 100%; justify-content: flex-start; }
     .match-meta { text-align: left; margin-left: 0; }
@@ -225,8 +272,8 @@
 <div class="header">
   <div class="header-emblem">⚽</div>
   <div>
-    <div class="header-title">FIFA World Cup <span>2026</span> Reactive Engine</div>
-    <div class="header-sub">USA · Mexico · Canada &nbsp;·&nbsp; Live Computational Data Pipeline</div>
+    <div class="header-title">FIFA World Cup ⚽ <span>2026</span></div>
+    <div class="header-sub">USA · Mexico · Canada &nbsp;·&nbsp; Jun 11 – Jul 19</div>
   </div>
   <div class="header-stats">
     <div class="hstat"><div class="hstat-val">48</div><div class="hstat-lbl">Teams</div></div>
@@ -237,16 +284,20 @@
 </div>
 
 <div class="nav">
-  <button class="active" onclick="show('fixtures',this)">📅 Fixtures &amp; Dynamic Scoring</button>
-  <button onclick="show('standings',this)">📊 Group Standings</button>
+  <button class="active" onclick="show('fixtures',this)">📅 Fixtures &amp; Inputs</button>
+  <button onclick="show('standings',this)">📊 Live Standings</button>
   <button onclick="show('squads',this)">👥 Squad Depth</button>
   <button onclick="show('odds',this)">📈 Odds &amp; Favorites</button>
 </div>
 
 <div class="main">
+
   <div id="fixtures" class="section active">
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">
+      Enter real or simulated scores inside the match boxes below. The <strong>Live Standings</strong> tables will re-calculate automatically.
+    </p>
     <div class="filter-row">
-      <button class="btn btn-gold" onclick="simulateGroupsAndRunKnockouts()">⚡ Auto Simulate Entire Tournament</button>
+      <button class="btn btn-gold" onclick="randomResults()">⚡ Auto Simulate Group Stage</button>
       <button class="btn" onclick="resetStandings()">↺ Clear Scores</button>
       <span style="border-left: 1px solid var(--border2); height: 20px; margin: 0 4px;"></span>
       <select id="roundFilter" onchange="renderFixtures()">
@@ -256,21 +307,71 @@
         <option value="Round of 16">Round of 16</option>
         <option value="Quarter-final">Quarterfinals</option>
         <option value="Semi-final">Semifinals</option>
-        <option value="Final">Finals</option>
+        <option value="Final">Final / 3rd place</option>
       </select>
+      <select id="groupFilter" onchange="renderFixtures()">
+        <option value="all">All groups</option>
+        <option value="A">Group A</option><option value="B">Group B</option>
+        <option value="C">Group C</option><option value="D">Group D</option>
+        <option value="E">Group E</option><option value="F">Group F</option>
+        <option value="G">Group G</option><option value="H">Group H</option>
+        <option value="I">Group I</option><option value="J">Group J</option>
+        <option value="K">Group K</option><option value="L">Group L</option>
+      </select>
+      <select id="venueFilter" onchange="renderFixtures()">
+        <option value="all">All venues</option>
+        <option value="Dallas">Dallas</option>
+        <option value="New York">New York / NJ</option>
+        <option value="Los Angeles">Los Angeles</option>
+        <option value="Houston">Houston</option>
+        <option value="Atlanta">Atlanta</option>
+        <option value="Miami">Miami</option>
+        <option value="Mexico City">Mexico City</option>
+        <option value="Toronto">Toronto</option>
+        <option value="Vancouver">Vancouver</option>
+        <option value="Seattle">Seattle</option>
+        <option value="Philadelphia">Philadelphia</option>
+        <option value="Boston">Boston</option>
+        <option value="Kansas City">Kansas City</option>
+        <option value="San Francisco">San Francisco</option>
+        <option value="Monterrey">Monterrey</option>
+        <option value="Guadalajara">Guadalajara</option>
+      </select>
+      <input type="text" id="teamSearch" placeholder="Search team…" oninput="renderFixtures()" style="width:130px">
     </div>
     <div id="fixtureList"></div>
   </div>
 
   <div id="standings" class="section">
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.9rem">
+      Real-time mathematical computations based on scores entered in the first tab. <span style="color:var(--blue2);font-weight:600;">Solid Border</span> = Top 2 (Qualified). <span style="color:var(--gold);font-weight:600;">Dashed Border</span> = 3rd Place line.
+    </p>
     <div class="standings-grid" id="standingsGrid"></div>
   </div>
 
-  <div id="squads" class="section"><div class="nation-select-row" id="nationBtns"></div><div class="squad-meta" id="squadMeta"></div><div id="squadDisplay"></div></div>
-  <div id="odds" class="section"><div class="tier-label">🏆 Tier 1 - Frontrunners</div><div class="odds-grid" id="oddsGrid1"></div><div class="tier-label">⚡ Tier 2 - Serious Contenders</div><div class="odds-grid" id="oddsGrid2"></div><div class="tier-label">🎯 Tier 3 - Dark Horses</div><div class="odds-grid" id="oddsGrid3"></div><div class="chart-outer"><div class="chart-title">Win probability</div><div style="position:relative;width:100%;height:260px"><canvas id="oddsChart"></canvas></div></div></div>
-</div>
+  <div id="squads" class="section">
+    <div class="nation-select-row" id="nationBtns"></div>
+    <div class="squad-meta" id="squadMeta"></div>
+    <div id="squadDisplay"></div>
+  </div>
 
-<script>
+  <div id="odds" class="section">
+    <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">Outright winner odds — early tournament updates. Implied probability shown below each price.</p>
+    <div class="tier-label">🏆 Tier 1 — Frontrunners</div>
+    <div class="odds-grid" id="oddsGrid1"></div>
+    <div class="tier-label">⚡ Tier 2 — Serious contenders</div>
+    <div class="odds-grid" id="oddsGrid2"></div>
+    <div class="tier-label">🎯 Tier 3 — Dark horses</div>
+    <div class="odds-grid" id="oddsGrid3"></div>
+    <div class="chart-outer">
+      <div class="chart-title">Win probability — top 10 nations</div>
+      <div style="position:relative;width:100%;height:260px">
+        <canvas id="oddsChart" role="img" aria-label="Bar chart of implied win probability for top 10 World Cup 2026 teams"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div><script>
 const KNOCKOUT_MAPPING = {
   73: { nextMatch: 90, slot: 'home' }, 74: { nextMatch: 89, slot: 'home' },
   75: { nextMatch: 90, slot: 'away' }, 76: { nextMatch: 91, slot: 'home' },
@@ -423,7 +524,7 @@ const FIXTURES=[
 
 const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
 
-const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Jules Koundé (Barcelona)"],mid:["Aurélien Tchouaméni (Real Madrid)","Warren Zaïre-Emery (PSG)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de the Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)"],def:["Dani Carvajal (Real Madrid)","Pau Cubarsí (Barcelona)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)"]}};
+const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Robin Risser (Leverkusen)","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Dayot Upamecano (Bayern)","Jules Koundé (Barcelona)","Lucas Hernandez (Bayern)","Theo Hernandez (AC Milan)","Malo Gusto (Chelsea)","Ibrahima Konaté (Liverpool)","Maxence Lacroix (Crystal Palace)","Lucas Digne (Aston Villa)"],mid:["N'Golo Kanté (Al-Ittihad)","Aurélien Tchouaméni (Real Madrid)","Adrien Rabiot (Marseille)","Warren Zaïre-Emery (PSG)","Manu Koné (Real Madrid)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★","Michael Olise (Bayern)★","Désiré Doué (PSG)★","Bradley Barcola (PSG)","Marcus Thuram (Inter Milan)","Rayan Cherki (Man City)","Jean-Philippe Mateta (Crystal Palace)"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de the Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)"],def:["Dani Carvajal (Real Madrid)","Pau Cubarsí (Barcelona)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)"]}};
 
 const ODDS=[{nation:"Spain",flag:"🇪🇸",odds:"+450",prob:18.2,tier:1},{nation:"France",flag:"🇫🇷",odds:"+480",prob:17.2,tier:1},{nation:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",odds:"+650",prob:13.3,tier:1},{nation:"Brazil",flag:"🇧🇷",odds:"+750",prob:11.8,tier:1},{nation:"Argentina",flag:"🇦🇷",odds:"+800",prob:11.1,tier:2},{nation:"Portugal",flag:"🇵🇹",odds:"+1100",prob:8.3,tier:2},{nation:"Germany",flag:"🇩🇪",odds:"+1200",prob:7.7,tier:2},{nation:"Netherlands",flag:"🇳🇱",odds:"+1600",prob:5.9,tier:2},{nation:"Morocco",flag:"🇲🇦",odds:"+2500",prob:3.8,tier:3},{nation:"Belgium",flag:"🇧🇪",odds:"+2800",prob:3.4,tier:3},{nation:"Uruguay",flag:"🇺🇾",odds:"+3000",prob:3.2,tier:3},{nation:"Colombia",flag:"🇨🇴",odds:"+3500",prob:2.8,tier:3},{nation:"USA",flag:"🇺🇸",odds:"+5000",prob:2.0,tier:3},{nation:"Mexico",flag:"🇲🇽",odds:"+6000",prob:1.6,tier:3},{nation:"Japan",flag:"🇯🇵",odds:"+7500",prob:1.3,tier:3}];
 
