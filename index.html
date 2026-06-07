@@ -210,6 +210,10 @@
     .match-engine { width: 100%; justify-content: flex-start; }
     .match-meta { text-align: left; margin-left: 0; }
   }
+  @media (max-width: 600px) {
+    .header-stats { display: none; }
+    .main { padding: .75rem 1rem; }
+  }
 </style>
 </head>
 <body>
@@ -232,7 +236,7 @@
 <div class="main">
   <div id="fixtures" class="section active">
     <div class="filter-row">
-      <button class="btn btn-gold" onclick="simulateGroupsAndRunKnockouts()">⚡ Auto Simulate Group Stage</button>
+      <button class="btn btn-gold" onclick="simulateGroupsAndRunKnockouts()">⚡ Auto Simulate Entire Tournament</button>
       <button class="btn" onclick="resetStandings()">↺ Clear Scores</button>
       <span style="border-left: 1px solid var(--border2); height: 20px; margin: 0 4px;"></span>
       <select id="roundFilter" onchange="renderFixtures()">
@@ -242,7 +246,7 @@
         <option value="Round of 16">Round of 16</option>
         <option value="Quarter-final">Quarterfinals</option>
         <option value="Semi-final">Semifinals</option>
-        <option value="Final">Final / 3rd place</option>
+        <option value="Final">Finals</option>
       </select>
     </div>
     <div id="fixtureList"></div>
@@ -253,7 +257,7 @@
   </div>
 
   <div id="squads" class="section"><div class="nation-select-row" id="nationBtns"></div><div class="squad-meta" id="squadMeta"></div><div id="squadDisplay"></div></div>
-  <div id="odds" class="section"><div class="tier-label">🏆 Tier 1</div><div class="odds-grid" id="oddsGrid1"></div><div class="tier-label">⚡ Tier 2</div><div class="odds-grid" id="oddsGrid2"></div><div class="tier-label">🎯 Tier 3</div><div class="odds-grid" id="oddsGrid3"></div><div class="chart-outer"><div class="chart-title">Win probability</div><div style="position:relative;width:100%;height:260px"><canvas id="oddsChart"></canvas></div></div></div>
+  <div id="odds" class="section"><div class="tier-label">🏆 Tier 1 - Favorites</div><div class="odds-grid" id="oddsGrid1"></div><div class="tier-label">⚡ Tier 2 - Contenders</div><div class="odds-grid" id="oddsGrid2"></div><div class="tier-label">🎯 Tier 3 - Dark Horses</div><div class="odds-grid" id="oddsGrid3"></div><div class="chart-outer"><div class="chart-title">Win probability</div><div style="position:relative;width:100%;height:260px"><canvas id="oddsChart"></canvas></div></div></div>
 </div>
 
 <script>
@@ -370,7 +374,7 @@ const FIXTURES=[
   {id:71,date:"Jun 27",group:"K",round:"Group Stage",home:"Colombia",away:"Portugal",venue:"Miami",time:"19:30"},
   {id:72,date:"Jun 27",group:"K",round:"Group Stage",home:"DR Congo",away:"Uzbekistan",venue:"Atlanta",time:"19:30"},
   
-  // Knockouts (Populated dynamically via Standings Arrays)
+  // Knockouts (Populated dynamically)
   {id:73,date:"Jun 28",group:"—",round:"Round of 32",home:"2nd Group A",away:"2nd Group B",venue:"Los Angeles",isKO:true},
   {id:74,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group E",away:"Best 3rd",venue:"Boston",isKO:true},
   {id:75,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group F",away:"2nd Group C",venue:"Monterrey",isKO:true},
@@ -410,7 +414,7 @@ const FIXTURES=[
 ];
 
 const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
-const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Robin Risser (Leverkusen)","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Dayot Upamecano (Bayern)","Jules Koundé (Barcelona)"],mid:["N'Golo Kanté (Al-Ittihad)","Aurélien Tchouaméni (Real Madrid)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de la Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)"],def:["Dani Carvajal (Real Madrid)","Pau Cubarsí (Barcelona)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)"]}};
+const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Robin Risser (Leverkusen)","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Dayot Upamecano (Bayern)","Jules Koundé (Barcelona)"],mid:["N'Golo Kanté (Al-Ittihad)","Aurélien Tchouaméni (Real Madrid)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de the Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)"],def:["Dani Carvajal (Real Madrid)","Pau Cubarsí (Barcelona)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)"]}};
 const ODDS=[{nation:"Spain",flag:"🇪🇸",odds:"+450",prob:18.2,tier:1},{nation:"France",flag:"🇫🇷",odds:"+480",prob:17.2,tier:1},{nation:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",odds:"+650",prob:13.3,tier:1},{nation:"Brazil",flag:"🇧🇷",odds:"+750",prob:11.8,tier:1}];
 
 let scores={}; 
@@ -459,7 +463,6 @@ function updatePenScore(matchId, type, val) {
   renderFixtures();
 }
 
-// Read group results, determine exact positions, map qualifiers to R32 slots
 function calculateGroupStandingsAndSeedR32() {
   let groupWinners = {};
   let groupRunnersUp = {};
@@ -496,7 +499,6 @@ function calculateGroupStandingsAndSeedR32() {
     }
   });
 
-  // Cascade updates forward through downstream slots
   for (let id = 73; id <= 104; id++) {
     evaluateKnockoutProgression(id);
   }
@@ -573,7 +575,7 @@ function renderFixtures(){
 function renderStandings(){
   const grid=document.getElementById('standingsGrid');
   grid.innerHTML='';
-  Object.entries(GROUP_TEAMS).forEach(([grp,teams])=>{
+  Object.entries(GROUP_TEAMS).forEach(([grp,teams]) => {
     const stats=teams.map(t=>{
       let w=0,d=0,l=0,gf=0,ga=0,p=0;
       FIXTURES.filter(f=>f.group===grp).forEach(f => {
@@ -642,10 +644,14 @@ function renderSquad(n){ const sq=SQUADS[n]; if(!sq) return; document.getElement
 function renderOdds(){ const el=document.getElementById('oddsGrid1'); ODDS.forEach(o=>{ el.innerHTML+=`<div class="odds-card"><div class="odds-flag">${o.flag}</div><div class="odds-name">${o.nation}</div><div class="odds-val">${o.odds}</div></div>`; }); }
 let oddsDrawn=false; function drawOddsChart(){ if(oddsDrawn)return; oddsDrawn=true; new Chart(document.getElementById('oddsChart'),{type:'bar',data:{labels:ODDS.map(o=>o.nation),datasets:[{data:ODDS.map(o=>o.prob),backgroundColor:'#f5a623'}]},\noptions:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}); }
 
-renderFixtures();
-renderStandings();
-initSquads();
-renderOdds();
+// Safety wrap initializations to run only AFTER the DOM is fully constructed
+document.addEventListener('DOMContentLoaded', () => {
+  calculateGroupStandingsAndSeedR32(); // Seed fallback placeholders into code tree
+  renderFixtures();
+  renderStandings();
+  initSquads();
+  renderOdds();
+});
 </script>
 </body>
 </html>
