@@ -114,7 +114,7 @@
     gap: 12px; flex-wrap: wrap; transition: border-color .15s;
   }
   .match-card:hover { border-color: var(--border2); }
-  .match-no { font-size: 10px; color: var(--text3); width: 28px; font-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
+  .match-no { font-size: 10px; color: var(--text3); width: 28px; flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; }
   
   .match-badge {
     font-size: 10px; font-weight: 600; padding: 2px 7px;
@@ -146,11 +146,14 @@
     font-size: 15px; font-weight: 700; text-align: center;
   }
   .score-input:focus { outline: none; border-color: var(--gold); background: var(--bg4); }
+  .score-input::-webkit-inner-spin-button, 
+  .score-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .score-input { -moz-appearance: textfield; }
 
   .engine-vs { color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; width: 16px; text-align: center; }
 
   .pens-wrapper { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: var(--gold); font-weight: bold; }
-  .pens-input { width: 26px; height: 22px; background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.3); border-radius: 3px; color: var(--gold2); font-size: 12px; text-align: center; }
+  .pens-input { width: 26px; height: 22px; background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.3); border-radius: 3px; color: var(--gold2); font-size: 12px; text-align: center; font-family: 'Barlow Condensed', sans-serif; }
 
   .match-meta { font-size: 11px; color: var(--text2); text-align: right; min-width: 140px; margin-left: auto; }
   .match-venue { font-size: 10px; color: var(--text3); margin-top: 1px; }
@@ -222,7 +225,6 @@
 </div>
 
 <script>
-// Downstream structural map tracking tree progression variables
 const KNOCKOUT_MAPPING = {
   73: { nextMatch: 90, slot: 'home' }, 74: { nextMatch: 89, slot: 'home' },
   75: { nextMatch: 90, slot: 'away' }, 76: { nextMatch: 91, slot: 'home' },
@@ -241,7 +243,6 @@ const KNOCKOUT_MAPPING = {
   101: { nextMatch: 104, slot: 'home' }, 102: { nextMatch: 104, slot: 'away' }
 };
 
-// Seeding assignments for the Round of 32 slots mapping out standard criteria
 const R32_SEED_BLUEPRINT = [
   { id: 73, homeSource: { type: '2nd', grp: 'A' }, awaySource: { type: '2nd', grp: 'B' } },
   { id: 74, homeSource: { type: '1st', grp: 'E' }, awaySource: { type: '3rd', idx: 0 } },
@@ -335,23 +336,23 @@ const FIXTURES=[
   {id:71,date:"Jun 27",group:"K",round:"Group Stage",home:"Colombia",away:"Portugal",venue:"Miami",time:"19:30"},
   {id:72,date:"Jun 27",group:"K",round:"Group Stage",home:"DR Congo",away:"Uzbekistan",venue:"Atlanta",time:"19:30"},
   
-  // Knockouts (Populated dynamically by pipeline engine)
-  {id:73,date:"Jun 28",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Los Angeles",time:"12:00",isKO:true},
-  {id:74,date:"Jun 29",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Boston",time:"16:30",isKO:true},
-  {id:75,date:"Jun 29",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Monterrey",time:"19:00",isKO:true},
-  {id:76,date:"Jun 29",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Houston",time:"12:00",isKO:true},
-  {id:77,date:"Jun 30",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"New York",time:"17:00",isKO:true},
-  {id:78,date:"Jun 30",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Dallas",time:"12:00",isKO:true},
-  {id:79,date:"Jun 30",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Mexico City",time:"19:00",isKO:true},
-  {id:80,date:"Jul 1",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Atlanta",time:"12:00",isKO:true},
-  {id:81,date:"Jul 1",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"San Francisco",time:"17:00",isKO:true},
-  {id:82,date:"Jul 1",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Seattle",time:"13:00",isKO:true},
-  {id:83,date:"Jul 2",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Toronto",time:"19:00",isKO:true},
-  {id:84,date:"Jul 2",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Los Angeles",time:"12:00",isKO:true},
-  {id:85,date:"Jul 2",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Vancouver",time:"20:00",isKO:true},
-  {id:86,date:"Jul 3",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Miami",time:"18:00",isKO:true},
-  {id:87,date:"Jul 3",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Kansas City",time:"20:30",isKO:true},
-  {id:88,date:"Jul 3",group:"—",round:"Round of 32",home:"Pending",away:"Pending",venue:"Dallas",time:"13:00",isKO:true},
+  // Knockouts (Populated dynamically)
+  {id:73,date:"Jun 28",group:"—",round:"Round of 32",home:"2nd Group A",away:"2nd Group B",venue:"Los Angeles",time:"12:00",isKO:true},
+  {id:74,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group E",away:"Best 3rd",venue:"Boston",time:"16:30",isKO:true},
+  {id:75,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group F",away:"2nd Group C",venue:"Monterrey",time:"19:00",isKO:true},
+  {id:76,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group C",away:"2nd Group F",venue:"Houston",time:"12:00",isKO:true},
+  {id:77,date:"Jun 30",group:"—",round:"Round of 32",home:"1st Group I",away:"Best 3rd",venue:"New York",time:"17:00",isKO:true},
+  {id:78,date:"Jun 30",group:"—",round:"Round of 32",home:"2nd Group E",away:"2nd Group I",venue:"Dallas",time:"12:00",isKO:true},
+  {id:79,date:"Jun 30",group:"—",round:"Round of 32",home:"1st Group A",away:"Best 3rd",venue:"Mexico City",time:"19:00",isKO:true},
+  {id:80,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group L",away:"Best 3rd",venue:"Atlanta",time:"12:00",isKO:true},
+  {id:81,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group D",away:"Best 3rd",venue:"San Francisco",time:"17:00",isKO:true},
+  {id:82,date:"Jul 1",group:"—",round:"Round of 32",home:"1st Group G",away:"Best 3rd",venue:"Seattle",time:"13:00",isKO:true},
+  {id:83,date:"Jul 2",group:"—",round:"Round of 32",home:"2nd Group K",away:"2nd Group L",venue:"Toronto",time:"19:00",isKO:true},
+  {id:84,date:"Jul 2",group:"—",round:"Round of 32",home:"1st Group H",away:"2nd Group J",venue:"Los Angeles",time:"12:00",isKO:true},
+  {id:85,date:"Jul 2",group:"—",round:"Round of 32",home:"1st Group B",away:"Best 3rd",venue:"Vancouver",time:"20:00",isKO:true},
+  {id:86,date:"Jul 3",group:"—",round:"Round of 32",home:"1st Group J",away:"2nd Group H",venue:"Miami",time:"18:00",isKO:true},
+  {id:87,date:"Jul 3",group:"—",round:"Round of 32",home:"1st Group K",away:"Best 3rd",venue:"Kansas City",time:"20:30",isKO:true},
+  {id:88,date:"Jul 3",group:"—",round:"Round of 32",home:"2nd Group D",away:"2nd Group G",venue:"Dallas",time:"13:00",isKO:true},
   
   {id:89,date:"Jul 4",group:"—",round:"Round of 16",home:"Pending",away:"Pending",venue:"Philadelphia",time:"17:00",isKO:true},
   {id:90,date:"Jul 4",group:"—",round:"Round of 16",home:"Pending",away:"Pending",venue:"Houston",time:"12:00",isKO:true},
@@ -399,7 +400,6 @@ function updateScore(matchId, type, val) {
     }
     evaluateKnockoutProgression(matchId);
   } else {
-    // If a group game changes, recalculate standings and push qualified teams to R32
     calculateGroupStandingsAndSeedR32();
   }
   renderStandings();
@@ -413,7 +413,6 @@ function updatePenScore(matchId, type, val) {
   renderFixtures();
 }
 
-// PIPELINE STEP 1 & 2: Parse standings on the fly, extract top seeds, and wire into R32
 function calculateGroupStandingsAndSeedR32() {
   let groupWinners = {};
   let groupRunnersUp = {};
@@ -435,26 +434,21 @@ function calculateGroupStandingsAndSeedR32() {
     thirdPlacePool.push({ name: stats[2].name, pts: stats[2].pts, gd: stats[2].gd, gf: stats[2].gf, fromGroup: grp });
   });
 
-  // Sort cross-tournament 3rd place wildcards
   thirdPlacePool.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
-  const top4ThirdPlace = thirdPlacePool.slice(0, 8); // Expanded slot allowance for 48-team structures
+  const topThirdPlace = thirdPlacePool.slice(0, 8); 
 
-  // Inject into Round of 32 blueprint dynamically
   R32_SEED_BLUEPRINT.forEach(blueprint => {
     const targetMatch = FIXTURES.find(f => f.id === blueprint.id);
     
-    // Resolve Home Slot
     if (blueprint.homeSource.type === '1st') targetMatch.home = groupWinners[blueprint.homeSource.grp];
     else if (blueprint.homeSource.type === '2nd') targetMatch.home = groupRunnersUp[blueprint.homeSource.grp];
 
-    // Resolve Away Slot
     if (blueprint.awaySource.type === '2nd') targetMatch.away = groupRunnersUp[blueprint.awaySource.grp];
     else if (blueprint.awaySource.type === '3rd') {
-      targetMatch.away = top4ThirdPlace[blueprint.awaySource.idx] ? top4ThirdPlace[blueprint.awaySource.idx].name : `3rd Group ${blueprint.awaySource.idx + 1}`;
+      targetMatch.away = topThirdPlace[blueprint.awaySource.idx] ? topThirdPlace[blueprint.awaySource.idx].name : `3rd Group ${blueprint.awaySource.idx + 1}`;
     }
   });
 
-  // cascade updates back through downstream steps
   for (let id = 73; id <= 104; id++) {
     evaluateKnockoutProgression(id);
   }
@@ -549,16 +543,28 @@ function renderStandings(){
   });
 }
 
+function badgeClass(round){
+  if(round==='Group Stage') return 'badge-group';
+  if(round==='Round of 32') return 'badge-r32';
+  if(round==='Round of 16') return 'badge-r16';
+  if(round==='Quarter-final') return 'badge-qf';
+  if(round==='Semi-final') return 'badge-sf';
+  return 'badge-f';
+}
+
+// FIX ADDED HERE: Added the visual refresh calls directly into the engine runner execution block
 function simulateGroupsAndRunKnockouts() {
   const pool = [0,1,1,2,2,3,4];
   
-  // Step 1: Generate Group Stage results dynamically
-  FIXTURES.forEach(f => { if(!f.isKO) scores[f.id] = [pool[Math.floor(Math.random()*pool.length)], pool[Math.floor(Math.random()*pool.length)]]; });
+  // 1. Simulate the raw group stages
+  FIXTURES.forEach(f => { 
+    if(!f.isKO) scores[f.id] = [pool[Math.floor(Math.random()*pool.length)], pool[Math.floor(Math.random()*pool.length)]]; 
+  });
   
-  // Step 2: Fire calculation pipeline to translate standings data into R32 team allocations
+  // 2. Fire the mathematical compilation pipeline to map real team strings into the R32 slots
   calculateGroupStandingsAndSeedR32();
 
-  // Step 3: Compute knockout results sequentially up the bracket
+  // 3. Process knockouts sequentially up the bracket tree
   FIXTURES.forEach(f => {
     if(f.isKO) {
       let hG = Math.floor(Math.random()*4), aG = Math.floor(Math.random()*4);
@@ -568,11 +574,30 @@ function simulateGroupsAndRunKnockouts() {
     }
   });
 
+  // 4. Force UI Redraw so you don't get stuck looking at stale placeholder strings
   renderStandings();
-  renderFixtures();
+  renderFixtures(); 
 }
 
-function resetStandings(){ scores={}; penScores={}; FIXTURES.forEach(f=>{if(f.isKO){f.home="Pending"; f.away="Pending";}}); renderFixtures(); renderStandings(); }
+function resetStandings(){ 
+  scores={}; 
+  penScores={}; 
+  // Restore baseline UI descriptors upon manual wipe operations
+  FIXTURES.forEach(f => {
+    if(f.isKO) {
+      const originalBlueprint = R32_SEED_BLUEPRINT.find(b => b.id === f.id);
+      if(originalBlueprint) {
+        f.home = `${originalBlueprint.homeSource.type} Group ${originalBlueprint.homeSource.grp || '3rd'}`;
+        f.away = `${originalBlueprint.awaySource.type} Group ${originalBlueprint.awaySource.grp || '3rd'}`;
+      } else {
+        f.home = "Pending";
+        f.away = "Pending";
+      }
+    }
+  });
+  renderFixtures(); 
+  renderStandings(); 
+}
 
 renderFixtures();
 renderStandings();
