@@ -1202,6 +1202,394 @@ initSquads();
 
 renderOdds();
 
+// Core Reactive Score Engine State Tracker
+let scores = {};
+
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'odds') setTimeout(drawOddsChart, 80);
+}
+
+function badgeClass(round) {
+  if (round === 'Group Stage') return 'badge-group';
+  if (round === 'Round of 32') return 'badge-r32';
+  if (round === 'Round of 16') return 'badge-r16';
+  if (round === 'Quarter-final') return 'badge-qf';
+  if (round === 'Semi-final') return 'badge-sf';
+  return 'badge-f';
+}
+
+// Track input updates, record metrics, refresh structural models
+function updateScore(matchId, type, val) {
+  if (!scores[matchId]) {
+    scores[matchId] = [null, null];
+  }
+  
+  if (val === "") {
+    scores[matchId][type === 'home' ? 0 : 1] = null;
+    if (scores[matchId][0] === null && scores[matchId][1] === null) {
+      delete scores[matchId];
+    }
+  } else {
+    scores[matchId][type === 'home' ? 0 : 1] = parseInt(val, 10);
+  }
+  
+  // Re-calculate group standings and build the dynamic knockout brackets
+  calculateTournamentProgression();
+}
+
+// Global reference for generated dynamic teams mapping
+let dynamicKnockoutTeams = {};
+
+function calculateTournamentProgression() {
+  const standingsData = {};
+  const thirdPlacePool = [];
+
+  // 1. Calculate Group Standings
+  Object.entries(GROUP_TEAMS).forEach(([grp, teams]) => {
+    standingsData[grp] = teams.map(t => {
+      let w = 0, d = 0, l = 0, gf = 0, ga = 0, p = 0;
+      FIXTURES.filter(f => f.group === grp && f.round === "Group Stage").forEach(f => {
+        const s = scores[`${f.id}`];
+        if (!s || s[0] === null || s[1] === null) return;
+        
+        const sh = s[0];
+        const sa = s[1];
+        
+        if (f.home === t.name) {
+          gf += sh; ga += sa; p++;
+          if (sh > sa) w++; else if (sh === sa) d++; else l++;
+        }
+        if (f.away === t.name) {
+          gf += sa; ga += sh; p++;
+          if (sa > sh) w++; else if (sh === sa) d++; else l++;
+        }
+      });
+      return { ...t, p, w, d, l, gf, ga, gd: gf - ga, pts: w * 3 + d };
+    }).sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+
+    // Collect 3rd place team for the wildcard pool
+    thirdPlacePool.push({ ...standingsData[grp][2], group: grp });
+  });
+
+  // Sort best 3rd place teams (top 8 qualify)
+  thirdPlacePool.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+  const qualifiedThirdPlace = thirdPlacePool.slice(0, 8);
+
+  // 2. Map Seeding for Round of 32
+  dynamicKnockoutTeams = {};
+  
+  // Quick checker to see if a whole group is fully simulated (6 matches total per group, 2 per match line)
+  const isGroupFinished = (grp) => {
+    const matches = FIXTURES.filter(f => f.group === grp);
+    return matches.every(f => scores[f.id] && scores[f.id][0] !== null && scores[f.id][1] !== null);
+  };
+
+  // Assign Top 2 teams dynamically
+  Object.keys(GROUP_TEAMS).forEach(grp => {
+    if (isGroupFinished(grp)) {
+      dynamicKnockoutTeams[`1st Group ${grp}`] = standingsData[grp][0].flag + " " + standingsData[grp][0].name;
+      dynamicKnockoutTeams[`2nd Group ${grp}`] = standingsData[grp][1].flag + " " + standingsData[grp][1].name;
+    }
+  });
+
+  // Assign Wildcards (Best 3rd place spots)
+  // To keep it clean and robust without complex UEFA-style charts, we distribute sequentially
+  for (let i = 0; i < 8; i++) {
+    const spotLabel = `Best 3rd`; // Matches the generic placeholder in your setup
+    if (!dynamicKnockoutTeams[spotLabel]) dynamicKnockoutTeams[spotLabel] = [];
+    
+    if (qualifiedThirdPlace[i] && isGroupFinished(qualifiedThirdPlace[i].group)) {
+      dynamicKnockoutTeams[spotLabel].push(qualifiedThirdPlace[i].flag + " " + qualifiedThirdPlace[i].name);
+    }
+  }
+
+  // Helper to determine match winners (including random penalty shootout if tied in knockouts)
+  const getWinnerOfMatch = (matchId) => {
+    const s = scores[matchId];
+    if (!s || s[0] === null || s[1] === null) return null;
+    const match = FIXTURES.find(f => f.id === matchId);
+    
+    let homeName = getTeamDisplayName(match, 'home');
+    let awayName = getTeamDisplayName(match, 'away');
+
+    if (s[0] > s[1]) return homeName;
+    if (s[1] > s[0]) return awayName;
+    
+    // Technical Tie-breaker fallback logic for bracket advancement (Simulates a Penalty Shootout)
+    if (!scores[matchId + "_ps"]) {
+      scores[matchId + "_ps"] = Math.random() > 0.5 ? 'home' : 'away';
+    }
+    return scores[matchId + "_ps"] === 'home' ? homeName + " (P)" : awayName + " (P)";
+  };
+
+  // 3. Propagate Bracket Winners sequentially through the remaining rounds
+  FIXTURES.forEach(f => {
+    if (f.round !== "Group Stage") {
+      // Resolve dynamic text labels from previous round winners
+      if (f.home.startsWith("W M")) {
+        const prevId = parseInt(f.home.replace("W M", ""), 10);
+        const winner = getWinnerOfMatch(prevId);
+        if (winner) dynamicKnockoutTeams[f.home] = winner;
+      }
+      if (f.away.startsWith("W M")) {
+        const prevId = parseInt(f.away.replace("W M", ""), 10);
+        const winner = getWinnerOfMatch(prevId);
+        if (winner) dynamicKnockoutTeams[f.away] = winner;
+      }
+      // Special Handling for final structures
+      if (f.home === "Winner SF1") {
+        const winner = getWinnerOfMatch(101);
+        if (winner) dynamicKnockoutTeams[f.home] = winner.replace(" (P)", "");
+      }
+      if (f.away === "Winner SF2") {
+        const winner = getWinnerOfMatch(102);
+        if (winner) dynamicKnockoutTeams[f.away] = winner.replace(" (P)", "");
+      }
+    }
+  });
+
+  // Refresh view structures
+  renderFixtures();
+  renderStandings();
+}
+
+// Dynamic display name fetcher
+function getTeamDisplayName(match, side) {
+  const originalName = side === 'home' ? match.home : match.away;
+  
+  if (match.round === "Group Stage") return originalName;
+
+  // Handle sequential array distribution for standard "Best 3rd" labels safely
+  if (originalName === "Best 3rd") {
+    const matchIndexOffset = FIXTURES.filter(f => f.round === "Round of 32" && (f.home === "Best 3rd" || f.away === "Best 3rd"));
+    const structuralPosition = matchIndexOffset.findIndex(f => f.id === match.id);
+    if (dynamicKnockoutTeams["Best 3rd"] && dynamicKnockoutTeams["Best 3rd"][structuralPosition]) {
+      return dynamicKnockoutTeams["Best 3rd"][structuralPosition];
+    }
+    return `Wildcard #${structuralPosition + 1}`;
+  }
+
+  return dynamicKnockoutTeams[originalName] || originalName;
+}
+
+function renderFixtures() {
+  const round = document.getElementById('roundFilter').value;
+  const grp = document.getElementById('groupFilter').value;
+  const venue = document.getElementById('venueFilter').value;
+  const search = document.getElementById('teamSearch').value.toLowerCase();
+  
+  let filtered = FIXTURES.filter(f => {
+    const mappedHome = getTeamDisplayName(f, 'home').toLowerCase();
+    const mappedAway = getTeamDisplayName(f, 'away').toLowerCase();
+    
+    if (round !== 'all' && !f.round.includes(round)) return false;
+    if (grp !== 'all' && f.group !== grp) return false;
+    if (venue !== 'all' && !f.venue.includes(venue)) return false;
+    if (search && !mappedHome.includes(search) && !mappedAway.includes(search)) return false;
+    return true;
+  });
+  
+  let lastDate = '', html = '';
+  filtered.forEach(f => {
+    if (f.date !== lastDate) { html += `<div class="sec-label">${f.date}</div>`; lastDate = f.date; }
+    const bc = badgeClass(f.round);
+    const bl = f.group !== '—' ? `Group ${f.group}` : f.round;
+    
+    const scoreHome = (scores[f.id] && scores[f.id][0] !== null) ? scores[f.id][0] : "";
+    const scoreAway = (scores[f.id] && scores[f.id][1] !== null) ? scores[f.id][1] : "";
+    
+    const displayHome = getTeamDisplayName(f, 'home');
+    const displayAway = getTeamDisplayName(f, 'away');
+
+    // A knockout slot unlocks only when actual named team data populates the placeholder strings
+    const isUnlocked = f.round === "Group Stage" || 
+                       (!displayHome.includes("Group") && !displayHome.includes("W M") && !displayHome.includes("Winner") && !displayHome.includes("Wildcard") &&
+                        !displayAway.includes("Group") && !displayAway.includes("W M") && !displayAway.includes("Winner") && !displayAway.includes("Wildcard"));
+
+    html += `
+      <div class="match-card" style="${!isUnlocked ? 'opacity: 0.55;' : ''}">
+        <div class="match-no">#${f.id}</div>
+        <span class="match-badge ${bc}">${bl}</span>
+        
+        <div class="match-engine">
+          <div class="engine-team home-align" style="${displayHome.includes('(P)') ? 'color: var(--teal); font-weight:700;' : ''}">${displayHome}</div>
+          <input type="number" min="0" class="score-input" value="${scoreHome}" 
+            ${!isUnlocked ? 'disabled placeholder="-"' : 'placeholder="0"'} 
+            oninput="updateScore(${f.id}, 'home', this.value)">
+          <div class="engine-vs">vs</div>
+          <input type="number" min="0" class="score-input" value="${scoreAway}" 
+            ${!isUnlocked ? 'disabled placeholder="-"' : 'placeholder="0"'} 
+            oninput="updateScore(${f.id}, 'away', this.value)">
+          <div class="engine-team away-align" style="${displayAway.includes('(P)') ? 'color: var(--teal); font-weight:700;' : ''}">${displayAway}</div>
+        </div>
+
+        <div class="match-meta">
+          ${f.time} local
+          <div class="match-venue">📍 ${f.venue} · ${f.country}</div>
+        </div>
+      </div>`;
+  });
+  
+  if (!html) html = '<p style="color:var(--text3);padding:1.5rem 0;font-size:13px">No matches found for the selected filters.</p>';
+  document.getElementById('fixtureList').innerHTML = html;
+}
+
+function renderStandings() {
+  const grid = document.getElementById('standingsGrid');
+  grid.innerHTML = '';
+  
+  Object.entries(GROUP_TEAMS).forEach(([grp, teams]) => {
+    const stats = teams.map(t => {
+      let w = 0, d = 0, l = 0, gf = 0, ga = 0, p = 0;
+      FIXTURES.filter(f => f.group === grp && f.round === "Group Stage").forEach(f => {
+        const s = scores[`${f.id}`];
+        if (!s || s[0] === null || s[1] === null) return;
+        
+        const sh = s[0];
+        const sa = s[1];
+        
+        if (f.home === t.name) {
+          gf += sh; ga += sa; p++;
+          if (sh > sa) w++; else if (sh === sa) d++; else l++;
+        }
+        if (f.away === t.name) {
+          gf += sa; ga += sh; p++;
+          if (sa > sh) w++; else if (sh === sa) d++; else l++;
+        }
+      });
+      return { ...t, p, w, d, l, gf, ga, gd: gf - ga, pts: w * 3 + d };
+    }).sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+    
+    const div = document.createElement('div');
+    div.className = 'group-card';
+    div.innerHTML = `<div class="group-card-head">Group ${grp}<div class="cols"><span>P</span><span>GD</span><span>Pts</span></div></div>` +
+      stats.map((t, i) => {
+        let qualClass = '';
+        if (i < 2) qualClass = 'qualify';
+        else if (i === 2) qualClass = 'third';
+        
+        return `<div class="grow ${qualClass}">` +
+          `<div class="gpos">${i + 1}</div><div class="gflag">${t.flag}</div>` +
+          `<div class="gname">${t.name}</div>` +
+          `<div class="gcols"><span>${t.p}</span><span>${t.gd >= 0 ? '+' : ''}${t.gd}</span></div>` +
+          `<div class="gpts">${t.pts}</div></div>`;
+      }).join('');
+    grid.appendChild(div);
+  });
+}
+
+function resetStandings() {
+  scores = {};
+  dynamicKnockoutTeams = {};
+  renderFixtures();
+  renderStandings();
+}
+
+// Complete Full Simulation Pipeline
+function randomResults() {
+  scores = {}; // fresh state run
+  const scoreWeightPool = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+  const getRandomScore = () => scoreWeightPool[Math.floor(Math.random() * scoreWeightPool.length)];
+
+  // Stage 1: Group Rounds Simulation
+  FIXTURES.filter(f => f.round === "Group Stage").forEach(f => {
+    scores[`${f.id}`] = [getRandomScore(), getRandomScore()];
+  });
+
+  // Calculate seeding allocations based on calculated values
+  calculateTournamentProgression();
+
+  // Stage 2: Loop through each consecutive Knockout Tier safely
+  const knockoutRounds = ["Round of 32", "Round of 16", "Quarter-final", "Semi-final", "Final"];
+  
+  knockoutRounds.forEach(roundName => {
+    FIXTURES.filter(f => f.round === roundName).forEach(f => {
+      let homeScore = getRandomScore();
+      let awayScore = getRandomScore();
+      
+      // Knockouts can't end in a draw. If scores match, add a random goal edge
+      if (homeScore === awayScore) {
+        Math.random() > 0.5 ? homeScore++ : awayScore++;
+      }
+      
+      scores[`${f.id}`] = [homeScore, awayScore];
+      calculateTournamentProgression(); // Cascade results forward to generate next matchups
+    });
+  });
+}
+
+function initSquads() {
+  const btns = document.getElementById('nationBtns');
+  Object.entries(SQUADS).forEach(([nation, sq], i) => {
+    const b = document.createElement('button');
+    b.className = 'nation-btn' + (i === 0 ? ' active' : '');
+    b.textContent = sq.flag + ' ' + nation;
+    b.onclick = () => {
+      document.querySelectorAll('.nation-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderSquad(nation);
+    };
+    btns.appendChild(b);
+  });
+  renderSquad('France');
+}
+
+function renderSquad(nation) {
+  const sq = SQUADS[nation];
+  document.getElementById('squadMeta').innerHTML =
+    `<div class="squad-meta-item">🌍 <strong>FIFA Rank:</strong> #${sq.rank}</div>` +
+    `<div class="squad-meta-item">👤 <strong>Coach:</strong> ${sq.coach}</div>` +
+    `<div class="squad-meta-item">⚽ <strong>Formation:</strong> ${sq.formation}</div>`;
+  const labels = { gk: 'Goalkeepers', def: 'Defenders', mid: 'Midfielders', fwd: 'Forwards' };
+  let html = '';
+  Object.entries(labels).forEach(([k, label]) => {
+    html += `<div class="pos-section"><div class="pos-label">${label}</div>`;
+    sq[k].forEach(p => {
+      const star = p.endsWith('★');
+      const clean = p.replace('★', '');
+      const parts = clean.split('(');
+      const name = parts[0].trim();
+      const club = parts[1] ? parts[1].replace(')', '').trim() : '';
+      html += `<span class="player-pill${star ? ' star' : ''}">${name}${club ? `<span class="pclub">${club}</span>` : ''}${star ? ' ⭐' : ''}</span>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('squadDisplay').innerHTML = html;
+}
+
+function renderOdds() {
+  const maxProb = 18.2;
+  [1, 2, 3].forEach(tier => {
+    const el = document.getElementById(`oddsGrid${tier}`);
+    ODDS.filter(o => o.tier === tier).forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'odds-card' + (tier === 1 ? ' fav' : '');
+      card.innerHTML = `<div class="odds-flag">${o.flag}</div><div class="odds-name">${o.nation}</div><div class="odds-val">${o.odds}</div><div class="odds-prob">${o.prob.toFixed(1)}% implied</div><div class="odds-bar-wrap"><div class="odds-bar" style="width:${Math.round(o.prob / maxProb * 100)}%"></div></div>`;
+      el.appendChild(card);
+    });
+  });
+}
+
+let oddsDrawn = false;
+function drawOddsChart() {
+  if (oddsDrawn) return; oddsDrawn = true;
+  const top = ODDS.slice(0, 10);
+  new Chart(document.getElementById('oddsChart'), {
+    type: 'bar',
+    data: { labels: top.map(o => o.flag + ' ' + o.nation), datasets: [{ label: 'Implied %', data: top.map(o => o.prob), backgroundColor: ['#f5a623', '#f5a623', '#3b82f6', '#22c55e', '#22c55e', '#8b5cf6', '#8b5cf6', '#8b5cf6', '#6b7280', '#6b7280'], borderRadius: 5, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v + '%', color: '#8ea2c0', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,.06)' } }, x: { ticks: { color: '#8ea2c0', font: { size: 11 }, maxRotation: 35 }, grid: { display: false } } } }
+  });
+}
+
+// Run Initializations
+renderFixtures();
+renderStandings();
+initSquads();
+renderOdds();
 </script>
 
 </body>
