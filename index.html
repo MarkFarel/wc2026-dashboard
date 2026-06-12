@@ -372,7 +372,7 @@
   </div>
 
 </div><script>
-const KNOCKOUT_MAPPING = {
+  const KNOCKOUT_MAPPING = {
   73: { nextMatch: 90, slot: 'home' }, 74: { nextMatch: 89, slot: 'home' },
   75: { nextMatch: 90, slot: 'away' }, 76: { nextMatch: 91, slot: 'home' },
   77: { nextMatch: 89, slot: 'away' }, 78: { nextMatch: 91, slot: 'away' },
@@ -409,7 +409,7 @@ const R32_SEED_BLUEPRINT = [
   { id: 88, homeSource: { type: '2nd', grp: 'D' }, awaySource: { type: '2nd', grp: 'G' } }
 ];
 
-const FIXTURES=[
+const INITIAL_FIXTURES = [
   {id:1,date:"Jun 11",group:"A",round:"Group Stage",home:"Mexico",away:"South Africa",venue:"Mexico City",time:"13:00"},
   {id:2,date:"Jun 11",group:"A",round:"Group Stage",home:"South Korea",away:"Czechia",venue:"Guadalajara",time:"20:00"},
   {id:3,date:"Jun 12",group:"B",round:"Group Stage",home:"Canada",away:"Bosnia & Herz.",venue:"Toronto",time:"15:00"},
@@ -483,7 +483,7 @@ const FIXTURES=[
   {id:71,date:"Jun 27",group:"K",round:"Group Stage",home:"Colombia",away:"Portugal",venue:"Miami",time:"19:30"},
   {id:72,date:"Jun 27",group:"K",round:"Group Stage",home:"DR Congo",away:"Uzbekistan",venue:"Atlanta",time:"19:30"},
   
-  // Knockouts
+  // Knockouts Blueprint
   {id:73,date:"Jun 28",group:"—",round:"Round of 32",home:"2nd Group A",away:"2nd Group B",venue:"Los Angeles",isKO:true},
   {id:74,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group E",away:"Best 3rd",venue:"Boston",isKO:true},
   {id:75,date:"Jun 29",group:"—",round:"Round of 32",home:"1st Group F",away:"2nd Group C",venue:"Monterrey",isKO:true},
@@ -522,29 +522,318 @@ const FIXTURES=[
   {id:104,date:"Jul 19",group:"—",round:"Final",home:"Pending",away:"Pending",venue:"New York",isKO:true}
 ];
 
+// Structural array used during active user runtimes
+let FIXTURES = JSON.parse(JSON.stringify(INITIAL_FIXTURES));
 const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
 
-const SQUADS={France:{rank:1,flag:"🇫🇷",formation:"4-3-3",coach:"Didier Deschamps",gk:["Mike Maignan (AC Milan)★","Brice Samba (Lens)"],def:["William Saliba (Arsenal)★","Jules Koundé (Barcelona)"],mid:["Aurélien Tchouaméni (Real Madrid)","Warren Zaïre-Emery (PSG)"],fwd:["Kylian Mbappé (Real Madrid)★","Ousmane Dembélé (PSG)★"]},Spain:{rank:2,flag:"🇪🇸",formation:"4-3-3",coach:"Luis de the Fuente",gk:["Unai Simón (Athletic Bilbao)","David Raya (Arsenal)"],def:["Dani Carvajal (Real Madrid)","Pau Cubarsí (Barcelona)"],mid:["Rodri (Man City)★","Pedri (Barcelona)★"],fwd:["Lamine Yamal (Barcelona)★","Nico Williams (Athletic Bilbao)"]}};
+const SQUADS = {
+  "Mexico": { rank: 15, flag: "🇲🇽", formation: "4-3-3", coach: "Javier Aguirre",
+    gk: ["Raúl Rangel (Guadalajara)", "Carlos Acevedo (Santos Laguna)", "Guillermo Ochoa (AVS)★"],
+    def: ["Johan Vásquez (Genoa)★", "César Montes (Lokomotiv Moscow)", "Jorge Sánchez (Cruz Azul)", "Israel Reyes (América)", "Mateo Chávez (Guadalajara)", "Jesús Gallardo (Toluca)"],
+    mid: ["Edson Álvarez (West Ham)★", "Érik Lira (Cruz Azul)", "Luis Romo (Cruz Azul)", "Álvaro Fidalgo (América)", "Luis Chávez (Dynamo Moscow)", "Charly Rodríguez (Cruz Azul)"],
+    fwd: ["Raúl Jiménez (Fulham)★", "Santiago Giménez (Feyenoord)★", "Hirving Lozano (San Diego FC)", "César Huerta (Pumas)", "Alexis Vega (Toluca)", "Uriel Antuna (Tigres)"]
+  },
+  "South Korea": { rank: 25, flag: "🇰🇷", formation: "4-2-3-1", coach: "Hong Myung-bo",
+    gk: ["Jo Hyeon-woo (Ulsan HD)", "Song Bum-keun (Shonan Bellmare)", "Kim Joon-hong (Jeonbuk)"],
+    def: ["Kim Min-jae (Bayern Munich)★", "Seol Young-woo (Red Star Belgrade)", "Cho Yu-min (Sharjah)", "Jung Seung-hyun (Al Wasl)", "Lee Myung-jae (Ulsan HD)", "Kim Moon-hwan (Daejeon)"],
+    mid: ["Hwang In-beom (Feyenoord)", "Lee Kang-in (PSG)★", "Lee Jae-sung (Mainz 05)", "Paik Seung-ho (Birmingham City)", "Hong Hyun-seok (Mainz 05)", "Park Yong-woo (Al Ain)"],
+    fwd: ["Son Heung-min (Tottenham)★", "Hwang Hee-chan (Wolves)★", "Lee Yeong-jun (Grasshopper)", "Oh Se-hun (Machida Zelvia)", "Bae Jun-ho (Stoke City)", "Eom Ji-sung (Swansea City)"]
+  },
+  "Czechia": { rank: 41, flag: "🇨🇿", formation: "3-4-2-1", coach: "Ivan Hašek",
+    gk: ["Matej Kovář (Bayer Leverkusen)", "Jindřich Staněk (Slavia Prague)★", "Lukáš Horníček (Braga)"],
+    def: ["Ladislav Krejčí (Girona)★", "Tomáš Holeš (Slavia Prague)", "Robin Hranáč (Hoffenheim)", "Vladimír Coufal (West Ham)", "Štěpán Chaloupek (Slavia Prague)", "David Zima (Slavia Prague)"],
+    mid: ["Tomáš Souček (West Ham)★", "Lukáš Provod (Slavia Prague)", "Pavel Šulc (Viktoria Plzeň)", "Ondřej Lingr (Slavia Prague)", "Alex Král (Espanyol)", "David Douděra (Slavia Prague)"],
+    fwd: ["Patrik Schick (Bayer Leverkusen)★", "Adam Hložek (Hoffenheim)", "Jan Kuchta (Midtjylland)", "Tomáš Chorý (Slavia Prague)", "Václav Černý (Rangers)", "Mojmír Chytil (Slavia Prague)"]
+  },
+  "South Africa": { rank: 60, flag: "🇿🇦", formation: "4-2-3-1", coach: "Hugo Broos",
+    gk: ["Ronwen Williams (Mamelodi Sundowns)★", "Ricardo Goss (SuperSport United)", "Sipho Chaine (Orlando Pirates)"],
+    def: ["Khuliso Mudau (Mamelodi Sundowns)", "Aubrey Modiba (Mamelodi Sundowns)", "Mothobi Mvala (Mamelodi Sundowns)", "Grant Kekana (Mamelodi Sundowns)", "Rushwin Dortley (Kaizer Chiefs)", "Fawaaz Basadien (Stellenbosch)"],
+    mid: ["Teboho Mokoena (Mamelodi Sundowns)★", "Sphephelo Sithole (Gil Vicente)", "Bathusi Aubaas (Mamelodi Sundowns)", "Thalente Mbatha (Orlando Pirates)", "Luke Le Roux (Värnamo)"],
+    fwd: ["Percy Tau (Al Ahly)★", "Lyle Foster (Burnley)★", "Oswin Appollis (Polokwane City)", "Themba Zwane (Mamelodi Sundowns)", "Relebohile Mofokeng (Orlando Pirates)", "Iqraam Rayners (Mamelodi Sundowns)"]
+  },
+  "Canada": { rank: 30, flag: "🇨🇦", formation: "3-4-2-1", coach: "Jesse Marsch",
+    gk: ["Maxime Crépeau (Portland Timbers)", "Dayne St. Clair (Minnesota United)", "Jonathan Sirois (CF Montréal)"],
+    def: ["Moïse Bombito (Nice)★", "Alistair Johnston (Celtic)", "Derek Cornelius (Marseille)", "Kamal Miller (Portland Timbers)", "Joel Waterman (CF Montréal)", "Richie Laryea (Toronto FC)"],
+    mid: ["Alphonso Davies (Bayern Munich)★", "Stephen Eustáquio (Porto)★", "Ismaël Koné (Marseille)", "Jonathan Osorio (Toronto FC)", "Samuel Piette (CF Montréal)", "Ali Ahmed (Vancouver Whitecaps)"],
+    fwd: ["Jonathan David (Lille)★", "Cyle Larin (Mallorca)", "Jacob Shaffelburg (Nashville SC)", "Tajon Buchanan (Inter Milan)★", "Liam Millar (Hull City)", "Theo Bair (Auxerre)"]
+  },
+  "Switzerland": { rank: 19, flag: "🇨🇭", formation: "3-4-3", coach: "Murat Yakin",
+    gk: ["Gregor Kobel (Dortmund)★", "Yann Sommer (Inter Milan)", "Yvon Mvogo (Lorient)"],
+    def: ["Manuel Akanji (Man City)★", "Nico Elvedi (Gladbach)", "Ricardo Rodríguez (Real Betis)", "Fabian Schär (Newcastle United)", "Cédric Zesiger (Wolfsburg)", "Leonidas Stergiou (Stuttgart)"],
+    mid: ["Granit Xhaka (Bayer Leverkusen)★", "Remo Freuler (Bologna)", "Michel Aebischer (Bologna)", "Denis Zakaria (Monaco)★", "Vincent Sierro (Toulouse)", "Fabian Rieder (VfB Stuttgart)"],
+    fwd: ["Breel Embolo (Monaco)★", "Dan Ndoye (Bologna)★", "Ruben Vargas (Augsburg)", "Zeki Amdouni (Benfica)", "Kwadwo Duah (Ludogorets)", "Noah Okafor (AC Milan)"]
+  },
+  "Bosnia & Herz.": { rank: 65, flag: "🇧🇦", formation: "3-5-2", coach: "Sergej Barbarez",
+    gk: ["Nikola Vasilj (St. Pauli)", "Kenan Pirić (Antalyaspor)", "Osman Hadžikić (Velež Mostar)"],
+    def: ["Sead Kolašinac (Atalanta)★", "Anel Ahmedhodžić (Sheffield United)", "Dennis Hadžikadunić (Hamburg)", "Nusmir Alajbegović (Leverkusen U19)", "Ermin Bičakčić (Eintracht Braunschweig)", "Jusuf Gazibegović (Sturm Graz)"],
+    mid: ["Rade Krunić (Red Star Belgrade)★", "Benjamin Tahirović (Ajax)", "Denis Huseinbašić (Köln)", "Armin Gigović (Holstein Kiel)", "Haris Hajradinović (Kasımpaşa)", "Ivan Bašić (Orenburg)"],
+    fwd: ["Edin Džeko (Fenerbahçe)★", "Ermedin Demirović (Stuttgart)★", "Haris Tabaković (Hoffenheim)", "Esmir Bajraktarević (New England Revolution)", "Said Hamulić (Widzew Łódź)"]
+  },
+  "Qatar": { rank: 55, flag: "🇶🇦", formation: "3-5-2", coach: "Tintín Márquez",
+    gk: ["Meshaal Barsham (Al Sadd)", "Saad Al-Sheeb (Al Sadd)", "Salah Zakaria (Al Duhail)"],
+    def: ["Lucas Mendes (Al Wakrah)", "Boualem Khoukhi (Al Sadd)", "Tarek Salman (Al Sadd)", "Al-Amin Hassan (Al Gharafa)", "Pedro Miguel (Al Sadd)", "Sultan Al-Brake (Al Duhail)"],
+    mid: ["Akram Afif (Al Sadd)★", "Hassan Al-Haydos (Al Sadd)", "Jassem Gaber (Al Arabi)", "Abdulaziz Hatem (Al Rayyan)", "Mohammed Waad (Al Sadd)", "Karim Boudiaf (Al Duhail)"],
+    fwd: ["Almoez Ali (Al Duhail)★", "Yusuf Abdurisag (Al Sadd)", "Ahmed Alaaeldin (Al Gharafa)", "Ismaeel Mohammad (Al Duhail)", "Homam Ahmed (Al Gharafa)"]
+  },
+  "Brazil": { rank: 6, flag: "🇧🇷", formation: "4-3-3", coach: "Dorival Júnior",
+    gk: ["Alisson Becker (Liverpool)★", "Ederson (Man City)", "Bento (Al Nassr)"],
+    def: ["Marquinhos (PSG)★", "Gabriel Magalhães (Arsenal)★", "Éder Militão (Real Madrid)", "Danilo (Juventus)", "Guilherme Arana (Atlético Mineiro)", "Yan Couto (Dortmund)", "Lucas Beraldo (PSG)"],
+    mid: ["Bruno Guimarães (Newcastle)★", "Lucas Paquetá (West Ham)", "João Gomes (Wolves)", "Douglas Luiz (Juventus)", "Andreas Pereira (Fulham)", "Éderson (Atalanta)★"],
+    fwd: ["Vinícius Júnior (Real Madrid)★", "Rodrygo (Real Madrid)★", "Raphinha (Barcelona)★", "Endrick (Real Madrid)", "Gabriel Martinelli (Arsenal)", "Savinho (Man City)★"]
+  },
+  "Morocco": { rank: 7, flag: "🇲🇦", formation: "4-2-3-1", coach: "Walid Regragui",
+    gk: ["Yassine Bounou (Al Hilal)★", "Munir Mohamedi (RS Berkane)", "El Mehdi Benabid (AS FAR)"],
+    def: ["Achraf Hakimi (PSG)★", "Nayef Aguerd (Real Sociedad)", "Noussair Mazraoui (Man United)★", "Abdel Abqar (Alavés)", "Chadi Riad (Crystal Palace)", "Yahia Attiyat Allah (Al Ahly)"],
+    mid: ["Sofyan Amrabat (Fenerbahçe)★", "Azzedine Ounahi (Panathinaikos)", "Brahim Díaz (Real Madrid)★", "Ismael Saibari (PSV Eindhoven)", "Amir Richardson (Fiorentina)", "Bilal El Khannouss (Leicester City)"],
+    fwd: ["Hakim Ziyech (Galatasaray)", "Youssef En-Nesyri (Fenerbahçe)★", "Ayoub El Kaabi (Olympiacos)", "Amine Adli (Leverkusen)", "Soufiane Rahimi (Al Ain)★", "Ilias Akhomach (Villarreal)"]
+  },
+  "Scotland": { rank: 43, flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", formation: "4-2-3-1", coach: "Steve Clarke",
+    gk: ["Angus Gunn (Norwich City)", "Craig Gordon (Hearts)", "Zander Clark (Hearts)"],
+    def: ["Andrew Robertson (Liverpool)★", "John Souttar (Rangers)", "Grant Hanley (Norwich City)", "Ryan Porteous (Watford)", "Anthony Ralston (Celtic)", "Greg Taylor (Celtic)", "Scott McKenna (Las Palmas)"],
+    mid: ["Scott McTominay (Napoli)★", "John McGinn (Aston Villa)★", "Billy Gilmour (Napoli)", "Ryan Christie (Bournemouth)", "Callum McGregor (Celtic)", "Kenny McLean (Norwich City)"],
+    fwd: ["Che Adams (Torino)★", "Lawrence Shankland (Hearts)", "Ben Doak (Middlesbrough)", "Lewis Morgan (New York Red Bulls)", "James Forrest (Celtic)", "Tommy Conway (Middlesbrough)"]
+  },
+  "Haiti": { rank: 83, flag: "🇭🇹", formation: "4-4-2", coach: "Sébastien Migné",
+    gk: ["Johnny Placide (Bastia)", "Alexandre Pierre (Sochaux)", "Garissone Innocent (Eupen)"],
+    def: ["Carlens Arcus (Angers)", "Ricardo Adé (LDU Quito)★", "Jean-Kévin Duverne (Nantes)", "Garven Metusala (Forge FC)", "Alex Christian (AEL Limassol)", "Duke Lacroix (Colorado Springs)"],
+    mid: ["Danley Jean Jacques (Metz)", "Leverton Pierre (Avranches)", "Bryan Alceus (Doxa)", "Carl Fred Sainté (FC Dallas)", "Christopher Attys (Triestina)"],
+    fwd: ["Frantzdy Pierrot (AEK Athens)★", "Duckens Nazon (Kayserispor)★", "Louicius Don Deedson (Odense)", "Mikaël Cantave (Vancouver FC)", "Fabrice Picault (Vancouver Whitecaps)"]
+  },
+  "USA": { rank: 17, flag: "🇺🇸", formation: "4-3-3", coach: "Mauricio Pochettino",
+    gk: ["Matt Turner (Crystal Palace)", "Patrick Schulte (Columbus Crew)", "Ethan Horvath (Cardiff City)"],
+    def: ["Antonee Robinson (Fulham)★", "Chris Richards (Crystal Palace)", "Tim Ream (Charlotte FC)", "Joe Scally (Gladbach)", "Miles Robinson (FC Cincinnati)", "Mark McKenzie (Toulouse)", "Cameron Carter-Vickers (Celtic)"],
+    mid: ["Weston McKennie (Juventus)★", "Tyler Adams (Bournemouth)", "Yunus Musah (AC Milan)", "Johnny Cardoso (Real Betis)★", "Malik Tillman (PSV Eindhoven)", "Gianluca Busio (Venezia)"],
+    fwd: ["Christian Pulisic (AC Milan)★", "Folarin Balogun (Monaco)★", "Timothy Weah (Juventus)", "Ricardo Pepi (PSV Eindhoven)", "Brenden Aaronson (Leeds United)", "Haji Wright (Coventry City)"]
+  },
+  "Türkiye": { rank: 22, flag: "🇹🇷", formation: "4-2-3-1", coach: "Vincenzo Montella",
+    gk: ["Mert Günok (Beşiktaş)", "Uğurcan Çakır (Trabzonspor)", "Altay Bayındır (Man United)"],
+    def: ["Merih Demiral (Al Ahli)★", "Abdülkerim Bardakcı (Galatasaray)", "Ferdi Kadıoğlu (Brighton)★", "Zeki Çelik (Roma)", "Samet Akaydin (Fenerbahçe)", "Kaan Ayhan (Galatasaray)", "Evren Eren Elmalı (Trabzonspor)"],
+    mid: ["Hakan Çalhanoğlu (Inter Milan)★", "Orkun Kökçü (Benfica)", "Arda Güler (Real Madrid)★", "Salih Özcan (Wolfsburg)", "Ismail Yüksek (Fenerbahçe)", "Okay Yokuşlu (Trabzonspor)"],
+    fwd: ["Barış Alper Yılmaz (Galatasaray)", "Kenan Yıldız (Juventus)★", "Semih Kılıçsoy (Beşiktaş)", "Kerem Aktürkoğlu (Benfica)★", "İrfan Can Kahveci (Fenerbahçe)", "Cenk Tosun (Fenerbahçe)"]
+  },
+  "Paraguay": { rank: 40, flag: "🇵🇾", formation: "4-3-3", coach: "Gustavo Alfaro",
+    gk: ["Gatito Fernández (Botafogo)", "Carlos Coronel (New York Red Bulls)", "Rodrigo Morínigo (Libertad)"],
+    def: ["Gustavo Gómez (Palmeiras)★", "Omar Alderete (Getafe)", "Junior Alonso (Atlético Mineiro)", "Fabian Balbuena (Dynamo Moscow)", "Santiago Arzamendia (Estudiantes)", "Gustavo Velázquez (Newell's)"],
+    mid: ["Andrés Cubas (Vancouver Whitecaps)", "Diego Gómez (Inter Miami)★", "Mathías Villasanti (Grêmio)", "Damian Bobadilla (São Paulo)", "Alejandro Romero Gamarra (Al Ain)", "Richard Sánchez (América)"],
+    fwd: ["Julio Enciso (Brighton)★", "Miguel Almirón (Newcastle United)★", "Antonio Sanabria (Torino)", "Alex Arce (LDU Quito)", "Ramon Sosa (Nottingham Forest)★", "Derlis González (Olimpia)"]
+  },
+  "Australia": { rank: 27, flag: "🇦🇺", formation: "4-4-2", coach: "Tony Popovic",
+    gk: ["Mathew Ryan (Roma)★", "Joe Gauci (Aston Villa)", "Paul Izzo (Randers)"],
+    def: ["Harry Souttar (Sheffield United)★", "Kye Rowles (Hearts)", "Aziz Behich (Melbourne City)", "Cameron Burgess (Ipswich Town)", "Lewis Miller (Hibernian)", "Jason Geria (Melbourne Victory)", "Jordan Bos (Westerlo)"],
+    mid: ["Jackson Irvine (St. Pauli)★", "Connor Metcalfe (St. Pauli)", "Aiden O'Neill (Standard Liège)", "Keanu Baccus (Mansfield Town)", "Ajdin Hrustic (Salernitana)", "Luke Brattan (Macarthur)"],
+    fwd: ["Craig Goodwin (Al Wehda)★", "Nestory Irankunda (Bayern Munich)★", "Mitchell Duke (Machida Zelvia)", "Brandon Borrello (Western Sydney)", "Kusini Yengi (Portsmouth)", "Adam Taggart (Perth Glory)"]
+  },
+  "Germany": { rank: 10, flag: "🇩🇪", formation: "4-2-3-1", coach: "Julian Nagelsmann",
+    gk: ["Marc-André ter Stegen (Barcelona)★", "Oliver Baumann (Hoffenheim)", "Alexander Nübel (VfB Stuttgart)"],
+    def: ["Antonio Rüdiger (Real Madrid)★", "Jonathan Tah (Bayer Leverkusen)★", "Joshua Kimmich (Bayern Munich)★", "David Raum (Leipzig)", "Nico Schlotterbeck (Dortmund)", "Maximilian Mittelstädt (Stuttgart)", "Benjamin Henrichs (Leipzig)"],
+    mid: ["Aleksandar Pavlović (Bayern Munich)", "Robert Andrich (Bayer Leverkusen)", "Florian Wirtz (Bayer Leverkusen)★", "Jamal Musiala (Bayern Munich)★", "Pascal Groß (Dortmund)", "Angelo Stiller (Stuttgart)", "Chris Führich (Stuttgart)"],
+    fwd: ["Kai Havertz (Arsenal)★", "Niclas Füllkrug (West Ham)", "Leroy Sané (Bayern Munich)", "Deniz Undav (VfB Stuttgart)★", "Maximilian Beier (Dortmund)", "Serge Gnabry (Bayern Munich)"]
+  },
+  "Ivory Coast": { rank: 34, flag: "🇨🇮", formation: "4-3-3", coach: "Emerse Faé",
+    gk: ["Yahia Fofana (Angers)", "Badra Ali Sangaré (Sekhukhune United)", "Mohamed Koné (Charleroi)"],
+    def: ["Evan Ndicka (Roma)★", "Odilon Kossounou (Atalanta)★", "Wilfried Singo (Monaco)", "Ousmane Diomande (Sporting CP)★", "Emmanuel Agbadou (Reims)", "Christopher Operi (Le Havre)", "Guela Doué (Strasbourg)"],
+    mid: ["Franck Kessié (Al Ahli)★", "Seko Fofana (Al Ittihad)", "Ibrahim Sangaré (Nottingham Forest)", "Hamed Traoré (Auxerre)", "Mahomed Diomande (Rangers)", "Mario Dorgeles (Nordsjælland)"],
+    fwd: ["Sébastien Haller (Leganés)★", "Simon Adingra (Brighton)★", "Oumar Diakité (Reims)", "Nicolas Pépé (Villarreal)", "Christian Kouamé (Fiorentina)", "Amad Diallo (Man United)★"]
+  },
+  "Ecuador": { rank: 23, flag: "🇪🇨", formation: "3-4-3", coach: "Sebastián Beccacece",
+    gk: ["Hernán Galíndez (Huracán)", "Moisés Ramírez (Independiente del Valle)", "Alexander Domínguez (LDU Quito)"],
+    def: ["Piero Hincapié (Bayer Leverkusen)★", "Willian Pacho (PSG)★", "Félix Torres (Corinthians)", "Joel Ordóñez (Club Brugge)", "Angelo Preciado (Sparta Prague)", "Cristian Ramírez (Ferencváros)"],
+    mid: ["Moisés Caicedo (Chelsea)★", "Pervis Estupiñán (Brighton)★", "Alan Franco (Atlético Mineiro)", "Kendry Páez (Independiente del Valle)★", "John Yeboah (Venezia)", "Pedro Vite (Vancouver Whitecaps)", "Carlos Gruezo (San Jose)"],
+    fwd: ["Enner Valencia (Internacional)★", "Kevin Rodríguez (Union SG)", "Jordy Caicedo (Sporting Gijón)", "Gonzalo Plata (Flamengo)", "Alan Minda (Cercle Brugge)"]
+  },
+  "Curaçao": { rank: 82, flag: "🇨🇼", formation: "4-3-3", coach: "Dick Advocaat",
+    gk: ["Eloy Room (Eindhoven)", "Tyrick Bodak (Cambuur)", "Trevor Doornbusch (Dordrecht)"],
+    def: ["Cuco Martina (NAC Breda)★", "Roshon van Eijma (Roda JC)", "Sherel Floranus (Antalyaspor)", "Jurien Gaari (Hazebrouck)", "Ar'jany Martha (Beerschot)"],
+    mid: ["Vurnon Anita (Al-Orobah)", "Leandro Bacuna (Groningen)★", "Juninho Bacuna (Al-Wahda)", "Godfried Roemeratoe (Waasland-Beveren)", "Kevin Felida (RKC Waalwijk)"],
+    fwd: ["Jearl Margaritha (Phoenix Rising)", "Gervane Kastaneer (Roda JC)", "Rangelo Janga (Eindhoven)★", "Kenji Gorré (Umm Salal)", "Brandley Kuwas (Volendam)", "Jeremy Antonisse (Moreirense)"]
+  },
+  "Netherlands": { rank: 8, flag: "🇳🇱", formation: "4-3-3", coach: "Ronald Koeman",
+    gk: ["Bart Verbruggen (Brighton)★", "Mark Flekken (Brentford)", "Nick Olij (Sparta Rotterdam)"],
+    def: ["Virgil van Dijk (Liverpool)★", "Nathan Aké (Man City)", "Stefan de Vrij (Inter Milan)", "Denzel Dumfries (Inter Milan)★", "Jeremie Frimpong (Leverkusen)★", "Micky van de Ven (Tottenham)★", "Matthijs de Ligt (Man United)"],
+    mid: ["Tijjani Reijnders (AC Milan)★", "Xavi Simons (Leipzig)★", "Ryan Gravenberch (Liverpool)★", "Quintenty Timber (Feyenoord)", "Jerdy Schouten (PSV Eindhoven)", "Teun Koopmeiners (Juventus)★"],
+    fwd: ["Cody Gakpo (Liverpool)★", "Memphis Depay (Corinthians)", "Donyell Malen (Dortmund)", "Brian Brobbey (Ajax)", "Joshua Zirkzee (Man United)", "Wout Weghorst (Ajax)"]
+  },
+  "Japan": { rank: 18, flag: "🇯🇵", formation: "3-4-2-1", coach: "Hajime Moriyasu",
+    gk: ["Zion Suzuki (Parma)★", "Keisuke Osako (Sanfrecce Hiroshima)", "Kosei Tani (Machida Zelvia)"],
+    def: ["Ko Itakura (Gladbach)★", "Shogo Taniguchi (Sint-Truiden)", "Koki Machida (Union SG)", "Yuto Nagatomo (FC Tokyo)", "Yukinari Sugawara (Southampton)", "Hiroki Ito (Bayern Munich)★", "Kota Takai (Kawasaki Frontale)"],
+    mid: ["Wataru Endo (Liverpool)★", "Hidemasa Morita (Sporting CP)", "Kaoru Mitoma (Brighton)★", "Ritsu Doan (Freiburg)", "Daichi Kamada (Crystal Palace)", "Reo Hatate (Celtic)", "Ao Tanaka (Leeds United)"],
+    fwd: ["Takefusa Kubo (Real Sociedad)★", "Takumi Minamino (Monaco)", "Ayase Ueda (Feyenoord)★", "Koki Ogawa (NEC Nijmegen)", "Mao Hosoya (Kashiwa Reysol)", "Keito Nakamura (Reims)"]
+  },
+  "Sweden": { rank: 38, flag: "🇸🇪", formation: "4-4-2", coach: "Jon Dahl Tomasson",
+    gk: ["Robin Olsen (Aston Villa)", "Viktor Johansson (Stoke City)★", "Kristoffer Nordfeldt (AIK)"],
+    def: ["Victor Lindelöf (Man United)★", "Isak Hien (Atalanta)★", "Emil Krafth (Newcastle United)", "Carl Starfelt (Celta Vigo)", "Ludwig Augustinsson (Anderlecht)", "Gabriel Gudmundsson (Lille)"],
+    mid: ["Dejan Kulusevski (Tottenham)★", "Hugo Larsson (Eintracht Frankfurt)★", "Yasin Ayari (Brighton)", "Anton Salétros (AIK)", "Jens Cajuste (Ipswich Town)", "Sebastian Nanasi (Strasbourg)★"],
+    fwd: ["Viktor Gyökeres (Sporting CP)★", "Alexander Isak (Newcastle United)★", "Anthony Elanga (Nottingham Forest)", "Gustaf Nilsson (Club Brugge)", "Niclas Eliasson (AEK Athens)", "Ken Sema (Watraft)"]
+  },
+  "Tunisia": { rank: 44, flag: "🇹🇳", formation: "4-3-3", coach: "Kais Yaâkoubi",
+    gk: ["Amanallah Memmiche (Espérance de Tunis)", "Bechir Ben Saïd (Espérance de Tunis)", "Aymen Dahmen (Al-Hazem)"],
+    def: ["Montassir Talbi (Lorient)★", "Yassine Meriah (Espérance de Tunis)", "Ali Abdi (Nice)", "Dylan Bronn (Salernitana)", "Wajdi Kechrida (Al-Gharafa)", "Yan Valery (Sheffield Wednesday)"],
+    mid: ["Aïssa Laïdouni (Al Wakrah)★", "Ellyes Skhiri (Eintracht Frankfurt)★", "Hamza Rafia (Lecce)", "Mohamed Ali Ben Romdhane (Ferencváros)", "Hannibal Mejbri (Burnley)", "Idris El Mizouni (Oxford United)"],
+    fwd: ["Youssef Msakni (Al Arabi)", "Elias Achouri (Copenhagen)★", "Sayfallah Ltaief (Twente)", "Seifeddine Jaziri (Zamalek)", "Haythem Jouini (Dibba Al-Hisn)", "Anis Ben Slimane (Norwich City)"]
+  },
+  "Belgium": { rank: 9, flag: "🇧🇪", formation: "4-2-3-1", coach: "Domenico Tedesco",
+    gk: ["Koen Casteels (Al Qadsiah)", "Matz Sels (Nottingham Forest)", "Thomas Kaminski (Luton Town)"],
+    def: ["Wout Faes (Leicester City)", "Timothy Castagne (Fulham)", "Arthur Theate (Eintracht Frankfurt)★", "Maxim De Cuyper (Club Brugge)", "Zeno Debast (Sporting CP)★", "Ameen Al-Dakhil (VfB Stuttgart)"],
+    mid: ["Kevin De Bruyne (Man City)★", "Amadou Onana (Aston Villa)★", "Youri Tielemans (Aston Villa)", "Orel Mangala (Everton)", "Arne Engels (Celtic)", "Romeo Lavia (Chelsea)★"],
+    fwd: ["Romelu Lukaku (Napoli)★", "Jérémy Doku (Man City)★", "Leandro Trossard (Arsenal)★", "Loïs Openda (Leipzig)", "Dodi Lukebakio (Sevilla)", "Charles De Ketelaere (Atalanta)"]
+  },
+  "Iran": { rank: 21, flag: "🇮🇷", formation: "4-2-3-1", coach: "Amir Ghalenoei",
+    gk: ["Alireza Beiranvand (Tractor)★", "Payam Niazmand (Sepahan)", "Hossein Hosseini (Esteghlal)"],
+    def: ["Shojae Khalilzadeh (Tractor)", "Milad Mohammadi (Persepolis)", "Hossein Kanaanizadegan (Persepolis)", "Amin Hazbavi (Al-Shamal)", "Saleh Hardani (Sepahan)", "Aria Yousefi (Sepahan)"],
+    mid: ["Saeid Ezatolahi (Shabab Al Ahli)★", "Saman Ghoddos (Ittihad Kalba)", "Alireza Jahanbakhsh (Heerenveen)", "Mohammad Mohebi (Rostov)", "Omid Noorafkan (Malavan)", "Rouzbeh Cheshmi (Esteghlal)"],
+    fwd: ["Mehdi Taremi (Inter Milan)★", "Sardar Azmoun (Shabab Al Ahli)★", "Mehdi Ghayedi (Ittihad Kalba)", "Shahriyar Moghanlou (Ittihad Kalba)", "Allahyar Sayyadmanesh (Westerlo)", "Ali Gholizadeh (Lech Poznań)"]
+  },
+  "Egypt": { rank: 29, flag: "🇪🇬", formation: "4-3-3", coach: "Hossam Hassan",
+    gk: ["Mohamed El Shenawy (Al Ahly)★", "Mostafa Shobeir (Al Ahly)", "Mohamed Awad (Zamalek)"],
+    def: ["Rami Rabia (Al Ahly)", "Mohamed Abdelmonem (Nice)★", "Mohamed Hamdi (Pyramids)", "Ahmed Ramadan (Ceramica Cleopatra)", "Hossam Abdelmaguid (Zamalek)", "Ahmed Eid (Al Masry)"],
+    mid: ["Marwan Attia (Al Ahly)", "Hamdi Fathi (Al Wakrah)", "Trézéguet (Al-Rayyan)★", "Nasser Maher (Zamalek)", "Akram Tawfik (Al Ahly)", "Nabil Emad (Zamalek)"],
+    fwd: ["Mohamed Salah (Liverpool)★", "Mostafa Mohamed (Nantes)★", "Omar Marmoush (Eintracht Frankfurt)★", "Zizo (Zamalek)★", "Mohamed Sherif (Al-Khaleej)", "Mostafa Fathi (Pyramids)"]
+  },
+  "New Zealand": { rank: 85, flag: "🇳🇿", formation: "4-3-3", coach: "Darren Bazeley",
+    gk: ["Alex Paulsen (Auckland FC)", "Oliver Sail (Perth Glory)", "Max Crocombe (Burton Albion)"],
+    def: ["Liberato Cacace (Empoli)★", "Nando Pijnaker (Auckland FC)", "Tommy Smith (Auckland FC)", "Michael Boxall (Minnesota United)", "Tyler Bindon (Reading)★", "Finn Surman (Portland Timbers)"],
+    mid: ["Marko Stamenic (Olympiacos)★", "Matthew Garbett (NAC Breda)", "Sarpreet Singh (Unattached)", "Joe Bell (Viking)", "Cam Howieson (Auckland FC)", "Alex Rufer (Wellington Phoenix)"],
+    fwd: ["Chris Wood (Nottingham Forest)★", "Ben Waine (Mansfield Town)", "Kosta Barbarouses (Wellington Phoenix)", "Elijah Just (St. Pölten)", "Ben Old (Saint-Étienne)★", "Alex Greive (Bohemians)"]
+  },
+  "Spain": { rank: 2, flag: "🇪🇸", formation: "4-3-3", coach: "Luis de la Fuente",
+    gk: ["Unai Simón (Athletic Bilbao)", "David Raya (Arsenal)★", "Álex Remiro (Real Sociedad)"],
+    def: ["Dani Carvajal (Real Madrid)★", "Pau Cubarsí (Barcelona)", "Aymeric Laporte (Al Nassr)★", "Marc Cucurella (Chelsea)", "Robin Le Normand (Atlético Madrid)★", "Dani Vivian (Athletic Bilbao)", "Alejandro Grimaldo (Leverkusen)★"],
+    mid: ["Rodri (Man City)★", "Pedri (Barcelona)★", "Dani Olmo (Barcelona)★", "Fabian Ruiz (PSG)", "Martín Zubimendi (Real Sociedad)★", "Mikel Merino (Arsenal)", "Alex Baena (Villarreal)"],
+    fwd: ["Lamine Yamal (Barcelona)★", "Nico Williams (Athletic Bilbao)★", "Álvaro Morata (AC Milan)", "Joselu (Al Gharafa)", "Ferran Torres (Barcelona)", "Mikel Oyarzabal (Real Sociedad)"]
+  },
+  "Uruguay": { rank: 16, flag: "🇺🇾", formation: "4-3-3", coach: "Marcelo Bielsa",
+    gk: ["Sergio Rochet (Internacional)★", "Santiago Mele (Junior)", "Franco Israel (Sporting CP)"],
+    def: ["Ronald Araújo (Barcelona)★", "José María Giménez (Atlético Madrid)", "Mathías Olivera (Napoli)", "Sebastián Cáceres (América)", "Guillermo Varela (Flamengo)", "Lucas Olaza (Krasnodar)", "Nicolás Marichal (Dynamo Moscow)"],
+    mid: ["Federico Valverde (Real Madrid)★", "Manuel Ugarte (Man United)★", "Nicolás de la Cruz (Flamengo)", "Rodrigo Bentancur (Tottenham)★", "Giorgian de Arrascaeta (Flamengo)", "Emiliano Martínez (Midtjylland)"],
+    fwd: ["Darwin Núñez (Liverpool)★", "Facundo Pellistri (Panathinaikos)", "Maximilian Araújo (Sporting CP)", "Brian Rodríguez (América)", "Cristian Olivera (LAFC)", "Luciano Rodríguez (Bahia)"]
+  },
+  "Saudi Arabia": { rank: 61, flag: "🇸🇦", formation: "3-4-2-1", coach: "Hervé Renard",
+    gk: ["Ahmed Al-Kassar (Al Qadsiah)", "Mohammed Al-Owais (Al Hilal)★", "Raghed Al-Najjar (Al Nassr)"],
+    def: ["Ali Lajami (Al Nassr)", "Hassan Al-Tambakti (Al Hilal)★", "Ali Al-Bulaihi (Al Hilal)", "Saud Abdulhamid (Roma)★", "Sultan Al-Ghannam (Al Nassr)", "Yasser Al-Shahrani (Al Hilal)"],
+    mid: ["Faisal Al-Ghamdi (Beerschot)", "Mohamed Kanno (Al Hilal)", "Abdullah Al-Khaibari (Al Nassr)", "Musab Al-Juwayr (Al Shabab)★", "Nasser Al-Dawsari (Al Hilal)", "Abdulelah Al-Malki (Al Ettifaq)"],
+    fwd: ["Salem Al-Dawsari (Al Hilal)★", "Firas Al-Buraikan (Al Ahli)★", "Abdullah Radif (Al Ettifaq)", "Saleh Al-Shehri (Al Ittihad)", "Abdulrahman Ghareeb (Al Nassr)"]
+  },
+  "Cape Verde": { rank: 69, flag: "🇨🇻", formation: "4-3-3", coach: "Bubista",
+    gk: ["Vozinha (Trenčín)", "Bruno Varela (Vitória Guimarães)★", "Dylan Silva (Sintrense)"],
+    def: ["Logan Costa (Villarreal)★", "Roberto Lopes (Shamrock Rovers)", "Pico (Shamrock Rovers)", "Diney Borges (Al Bataeh)", "Steven Moreira (Columbus Crew)", "João Paulo (Sheriff Tiraspol)"],
+    mid: ["Kevin Pina (Krasnodar)★", "Patrick Andrade (Qarabag)", "Jamiro Monteiro (Zamboanga)", "Kenny Rocha (Ostend)", "Deroy Duarte (Ludogorets)"],
+    fwd: ["Ryan Mendes (Hatta)★", "Garry Rodrigues (Sivasspor)", "Bebé (Racing Ferrol)", "Jovane Cabral (Estrela Amadora)", "Hélio Varela (Gent)", "Dailon Livramento (Verona)"]
+  },
+  "France": { rank: 3, flag: "🇫🇷", formation: "4-3-3", coach: "Didier Deschamps",
+    gk: ["Mike Maignan (AC Milan)★", "Brice Samba (Lens)", "Alphonse Areola (West Ham)"],
+    def: ["William Saliba (Arsenal)★", "Jules Koundé (Barcelona)★", "Dayot Upamecano (Bayern Munich)", "Theo Hernandez (AC Milan)★", "Ibrahima Konaté (Liverpool)", "Benjamin Pavard (Inter Milan)", "Ferland Mendy (Real Madrid)"],
+    mid: ["Aurélien Tchouaméni (Real Madrid)★", "Eduardo Camavinga (Real Madrid)★", "Warren Zaïre-Emery (PSG)", "N'Golo Kanté (Al Ittihad)", "Adrien Rabiot (Marseille)★", "Youssouf Fofana (AC Milan)"],
+    fwd: ["Kylian Mbappé (Real Madrid)★", "Ousmane Dembélé (PSG)★", "Marcus Thuram (Inter Milan)★", "Bradley Barcola (PSG)★", "Randal Kolo Muani (PSG)", "Kingsley Coman (Bayern Munich)"]
+  },
+  "Norway": { rank: 31, flag: "🇳🇴", formation: "4-3-3", coach: "Ståle Solbakken",
+    gk: ["Ørjan Nyland (Sevilla)★", "Egil Selvik (Viking)", "Mathias Dyngeland (Brann)"],
+    def: ["Leo Østigård (Rennes)★", "Julian Ryerson (Dortmund)★", "Kristoffer Ajer (Brentford)", "Andreas Hanche-Olsen (Mainz 05)", "David Møller Wolfe (AZ Alkmaar)", "Marcus Holmgren Pedersen (Torino)"],
+    mid: ["Martin Ødegaard (Arsenal)★", "Sander Berge (Fulham)★", "Antonio Nusa (Leipzig)★", "Patrick Berg (Bodø/Glimt)", "Hugo Vetlesen (Club Brugge)", "Kristian Thorstvedt (Sassuolo)"],
+    fwd: ["Erling Haaland (Man City)★", "Alexander Sørloth (Atlético Madrid)★", "Jørgen Strand Larsen (Wolves)", "Aron Dønnum (Toulouse)", "Jens Petter Hauge (Bodø/Glimt)", "Erling Knudtzon (Lillestrøm)"]
+  },
+  "Senegal": { rank: 15, flag: "🇸🇳", formation: "4-3-3", coach: "Pape Thiaw",
+    gk: ["Édouard Mendy (Al Ahly)★", "Seny Dieng (Middlesbrough)", "Mory Diaw (Clermont)"],
+    def: ["Kalidou Koulibaly (Al Hilal)★", "Moussa Niakhaté (Lyon)", "Ismail Jakobs (Galatasaray)", "Abdou Diallo (Al-Arabi)", "Formose Mendy (Lorient)", "Abdoulaye Seck (Maccabi Haifa)", "Seydou Sano (Al-Gharafa)"],
+    mid: ["Idrissa Gueye (Everton)", "Lamine Camara (Monaco)★", "Pape Matar Sarr (Tottenham)★", "Pathé Ciss (Rayo Vallecano)", "Habib Diarra (Strasbourg)★", "Pape Gueye (Villarreal)"],
+    fwd: ["Sadio Mané (Al Nassr)★", "Nicolas Jackson (Chelsea)★", "Ismaïla Sarr (Crystal Palace)", "Iliman Ndiaye (Everton)", "Cherif Ndiaye (Red Star Belgrade)", "Boulaye Dia (Lazio)"]
+  },
+  "Iraq": { rank: 57, flag: "🇮🇶", formation: "4-2-3-1", coach: "Jesús Casas",
+    gk: ["Jalal Hassan (Al-Zawraa)★", "Ahmed Basil (Al-Shorta)", "Fahad Talib (Al-Talaba)"],
+    def: ["Rebin Sulaka (Sagan Tosu)", "Hussein Ali (Heerenveen)", "Merdhas Doski (Slovácko)★", "Saad Natiq (Al-Shorta)", "Zaid Tahseen (Al-Shorta)", "Munaf Younus (Al-Shorta)"],
+    mid: ["Amir Al-Ammari (Cracovia)★", "Osama Rashid (Erbil)", "Ibrahim Bayesh (Al-Riyadh)", "Youssef Amyn (Eintracht Braunschweig)★", "Bashar Resan (Al-Markhiya)", "Safaa Hadi (Al-Quwa Al-Jawiya)"],
+    fwd: ["Aymen Hussein (Al-Khor)★", "Ali Jasim (Como)★", "Mohanad Ali (Al-Shorta)", "Ali Al-Hamadi (Ipswich Town)", "Danilo Al-Saed (Heerenveen)"]
+  },
+  "Argentina": { rank: 1, flag: "🇦🇷", formation: "4-3-3", coach: "Lionel Scaloni",
+    gk: ["Emiliano Martínez (Aston Villa)★", "Gerónimo Rulli (Marseille)", "Walter Benítez (PSV Eindhoven)"],
+    def: ["Cristian Romero (Tottenham)★", "Nicolás Otamendi (Benfica)", "Lisandro Martínez (Man United)★", "Nahuel Molina (Atlético Madrid)", "Nicolás Tagliafico (Lyon)", "Gonzalo Montiel (Sevilla)", "Leonardo Balerdi (Marseille)"],
+    mid: ["Rodrigo De Paul (Atlético Madrid)★", "Alexis Mac Allister (Liverpool)★", "Enzo Fernández (Chelsea)★", "Leandro Paredes (Roma)", "Giovani Lo Celso (Real Betis)", "Exequiel Palacios (Leverkusen)"],
+    fwd: ["Lionel Messi (Inter Miami)★", "Lautaro Martínez (Inter Milan)★", "Julián Álvarez (Atlético Madrid)★", "Alejandro Garnacho (Man United)", "Nicolás González (Juventus)", "Paulo Dybala (Roma)★"]
+  },
+  "Algeria": { rank: 37, flag: "🇩🇿", formation: "4-3-3", coach: "Vladimir Petković",
+    gk: ["Anthony Mandrea (Caen)", "Alexandre Oukidja (Metz)", "Alexis Guendouz (Persepolis)"],
+    def: ["Aïssa Mandi (Lille)", "Rayan Aït-Nouri (Wolves)★", "Ramy Bensebaini (Dortmund)★", "Youcef Atal (Sadd)", "Mohamed Amine Tougai (Espérance)", "Jaouen Hadjam (Young Boys)"],
+    mid: ["Ismaël Bennacer (AC Milan)★", "Ramiz Zerrouki (Feyenoord)", "Houssem Aouar (Al Ittihad)★", "Hicham Boudaoui (Nice)", "Himad Abdelli (Angers)", "Ahmed Kendouci (Ceramica Cleopatra)"],
+    fwd: ["Riyad Mahrez (Al Ahli)★", "Amine Gouiri (Rennes)★", "Saïd Benrahma (Lyon)", "Baghdad Bounedjah (Al-Shamal)", "Mohamed Amoura (Wolfsburg)★", "Anis Hadj Moussa (Feyenoord)"]
+  },
+  "Austria": { rank: 24, flag: "🇦🇹", formation: "4-2-3-1", coach: "Ralf Rangnick",
+    gk: ["Patrick Pentz (Brøndby)★", "Alexander Schlager (Salzburg)", "Niklas Hedl (Rapid Vienna)"],
+    def: ["David Alaba (Real Madrid)★", "Kevin Danso (Lens)★", "Stefan Posch (Bologna)", "Maximilian Wöber (Leeds United)", "Philipp Lienhart (Freiburg)", "Phillipp Mwene (Mainz 05)", "Leopold Querfeld (Union Berlin)"],
+    mid: ["Marcel Sabitzer (Dortmund)★", "Konrad Laimer (Bayern Munich)★", "Christoph Baumgartner (Leipzig)★", "Nicolas Seiwald (Leipzig)", "Florian Grillitsch (Hoffenheim)", "Patrick Wimmer (Wolfsburg)", "Romano Schmid (Werder Bremen)"],
+    fwd: ["Michael Gregoritsch (Freiburg)", "Marko Arnautović (Inter Milan)", "Junior Adamu (Freiburg)", "Andreas Weimann (Blackburn)", "Maximilian Entrup (LASK)"]
+  },
+  "Jordan": { rank: 63, flag: "🇯🇴", formation: "3-4-2-1", coach: "Jamal Sellami",
+    gk: ["Yazeed Abulaila (Al-Hussain)★", "Abdallah Al-Fakhouri (Al-Wehdat)", "Noureddin Bani Ateyah (Al-Faisaly)"],
+    def: ["Yazan Al-Arab (FC Seoul)★", "Abdallah Nasib (Al-Hussein)", "Husam Abu Dahab (Al-Faisaly)", "Mohammad Abu Hachich (Al-Wehdat)", "Ihsan Haddad (Al-Faisaly)", "Hijazi Maher (East Bengal)"],
+    mid: ["Nizar Al-Rashdan (Al-Shorta)", "Noor Al-Rawabdeh (Selangor)★", "Rajaei Ayed (Al-Hussein)", "Ibrahim Sadeh (Al-Khor)", "Mahmoud Al-Mardi (Al-Hussein)"],
+    fwd: ["Musa Al-Taamari (Montpellier)★", "Yazan Al-Naimat (Al-Arabi)★", "Ali Olwan (Al-Selamiya)", "Reziq Bani Hani (Al-Hussein)", "Arif Al-Haj (Al-Faisaly)"]
+  },
+  "Portugal": { rank: 5, flag: "🇵🇹", formation: "4-3-3", coach: "Roberto Martínez",
+    gk: ["Diogo Costa (Porto)★", "José Sá (Wolves)", "Rui Silva (Real Betis)"],
+    def: ["Rúben Dias (Man City)★", "António Silva (Benfica)", "João Cancelo (Al Hilal)", "Nuno Mendes (PSG)★", "Diogo Dalot (Man United)★", "Gonçalo Inácio (Sporting CP)", "Nélson Semedo (Wolves)"],
+    mid: ["Bruno Fernandes (Man United)★", "Bernardo Silva (Man City)★", "Vitinha (PSG)★", "João Neves (PSG)", "João Palhinha (Bayern Munich)★", "Ruben Neves (Al Hilal)", "Otávio (Al Nassr)"],
+    fwd: ["Cristiano Ronaldo (Al Nassr)★", "Rafael Leão (AC Milan)★", "Diogo Jota (Liverpool)", "João Félix (Chelsea)", "Gonçalo Ramos (PSG)", "Francisco Conceição (Juventus)"]
+  },
+  "Colombia": { rank: 13, flag: "🇨🇴", formation: "4-2-3-1", coach: "Néstor Lorenzo",
+    gk: ["Camilo Vargas (Atlas)★", "Álvaro Montero (Millonarios)", "David Ospina (Atlético Nacional)"],
+    def: ["Daniel Muñoz (Crystal Palace)★", "Davinson Sánchez (Galatasaray)★", "Jhon Lucumí (Bologna)", "Johan Mojica (Mallorca)", "Carlos Cuesta (Genk)", "Yerry Mina (Cagliari)", "Santiago Arias (Bahia)"],
+    mid: ["Jefferson Lerma (Crystal Palace)", "Richard Ríos (Palmeiras)★", "James Rodríguez (Rayo Vallecano)★", "Jhon Arias (Fluminense)★", "Kevin Castaño (Krasnodar)", "Mateus Uribe (Al Sadd)", "Juan Fernando Quintero (Racing)"],
+    fwd: ["Luis Díaz (Liverpool)★", "Jhon Durán (Aston Villa)★", "Luis Sinisterra (Bournemouth)", "Rafael Santos Borré (Internacional)", "Jhon Córdoba (Krasnodar)★", "Juan Camilo Hernández (Columbus Crew)"]
+  },
+  "Uzbekistan": { rank: 50, flag: "🇺🇿", formation: "3-4-2-1", coach: "Srečko Katanec",
+    gk: ["Utkir Yusupov (Foolad)★", "Abduvohid Nematov (Nasaf)", "Botirali Ergashev (Neftchi Fergana)"],
+    def: ["Abdukodir Khusanov (Lens)★", "Husniddin Aliqulov (Samsunspor)", "Rustam Ashurmatov (Rubin Kazan)", "Sherzod Nasrullaev (Nasaf)", "Farrukh Sayfiev (Navbahor)", "Umar Eshmurodov (Selangor)"],
+    mid: ["Otabek Shukurov (Al-Fayha)★", "Odiljon Hamrobekov (Navbahor)", "Azizbek Turgunbaev (Sivasspor)", "Jaloliddin Masharipov (Esteghlal)", "Jamshid Iskanderov (Navbahor)", "Hojimat Erkinov (Al-Wahda)"],
+    fwd: ["Eldor Shomurodov (Roma)★", "Abbosbek Fayzullaev (CSKA Moscow)★", "Oston Urunov (Persepolis)★", "Igor Sergeev (Pathum United)", "Bobur Abdikholikov (Nasaf)"]
+  },
+  "DR Congo": { rank: 46, flag: "🇨🇩", formation: "4-2-3-1", coach: "Sébastien Desabre",
+    gk: ["Dimitry Bertaud (Montpellier)★", "Lionel Mpasi (Rodez)", "Timothy Fayulu (Sion)"],
+    def: ["Chancel Mbemba (Marseille)★", "Dylan Batubinsika (Saint-Étienne)", "Arthur Masuaku (Beşiktaş)", "Gedeon Kalulu (Lorient)", "Joris Kayembe (Genk)", "Rocky Bushiri (Hibernian)"],
+    mid: ["Samuel Moutoussamy (Sivasspor)", "Charles Pickel (Cremonese)★", "Gaël Kakuta (Esteghlal)", "Edo Kayembe (Watford)★", "Noah Sadiki (Union SG)", "William Balikwisha (Leuven)"],
+    fwd: ["Yoane Wissa (Brentford)★", "Meschak Elia (Young Boys)", "Simon Banza (Trabzonspor)★", "Théo Bongonda (Spartak Moscow)", "Fiston Mayele (Pyramids)", "Samuel Essende (Augsburg)"]
+  },
+  "England": { rank: 4, flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", formation: "4-2-3-1", coach: "Thomas Tuchel",
+    gk: ["Jordan Pickford (Everton)", "Dean Henderson (Crystal Palace)", "Nick Pope (Newcastle United)★"],
+    def: ["John Stones (Man City)★", "Marc Guéhi (Crystal Palace)★", "Trent Alexander-Arnold (Liverpool)★", "Kyle Walker (Man City)", "Kieran Trippier (Newcastle United)", "Ezri Konsa (Aston Villa)", "Joe Gomez (Liverpool)"],
+    mid: ["Declan Rice (Arsenal)★", "Jude Bellingham (Real Madrid)★", "Cole Palmer (Chelsea)★", "Phil Foden (Man City)★", "Kobbie Mainoo (Man United)", "Conor Gallagher (Atlético Madrid)", "Adam Wharton (Crystal Palace)"],
+    fwd: ["Harry Kane (Bayern Munich)★", "Bukayo Saka (Arsenal)★", "Ollie Watkins (Aston Villa)", "Anthony Gordon (Newcastle United)", "Jarrod Bowen (West Ham)", "Eberechi Eze (Crystal Palace)"]
+  },
+  "Croatia": { rank: 11, flag: "🇭🇷", formation: "4-3-3", coach: "Zlatko Dalić",
+    gk: ["Dominik Livaković (Fenerbahçe)★", "Nediljko Labrović (Augsburg)", "Ivica Ivušić (Pafos)"],
+    def: ["Joško Gvardiol (Man City)★", "Josip Šutalo (Ajax)★", "Duje Ćaleta-Car (Lyon)", "Josip Stanišić (Bayern Munich)", "Borna Sosa (Torino)", "Marin Pongračić (Fiorentina)", "Martin Erlić (Bologna)"],
+    mid: ["Luka Modrić (Real Madrid)★", "Mateo Kovačić (Man City)★", "Mario Pašalić (Atalanta)", "Marcelo Brozović (Al Nassr)", "Luka Sučić (Real Sociedad)★", "Lovro Majer (Wolfsburg)", "Martin Baturina (Dinamo Zagreb)"],
+    fwd: ["Andrej Kramarić (Hoffenheim)★", "Ivan Perišić (Hajduk Split)", "Ante Budimir (Osasuna)", "Bruno Petković (Dinamo Zagreb)", "Luka Ivanušec (Feyenoord)", "Marco Pašalić (Rijeka)"]
+  },
+  "Ghana": { rank: 74, flag: "🇬🇭", formation: "4-2-3-1", coach: "Otto Addo",
+    gk: ["Lawrence Ati-Zigi (St. Gallen)★", "Joseph Wollacott (Crawley Town)", "Abdul Manaf Nurudeen (Eupen)"],
+    def: ["Mohammed Salisu (Monaco)★", "Tariq Lamptey (Brighton)", "Alidu Seidu (Rennes)", "Alexander Djiku (Fenerbahçe)★", "Abdul Mumin (Rayo Vallecano)", "Jerome Opoku (İstanbul Başakşehir)", "Gideon Mensah (Auxerre)"],
+    mid: ["Thomas Partey (Arsenal)★", "Mohammed Kudus (West Ham)★", "Elisha Owusu (Auxerre)", "Salis Abdul Samed (Sunderland)", "Majid Ashimeru (Anderlecht)", "Ibrahim Sulemana (Atalanta)"],
+    fwd: ["Inaki Williams (Athletic Bilbao)★", "Antoine Semenyo (Bournemouth)★", "Jordan Ayew (Leicester City)", "Ernest Nuamah (Lyon)", "Abdul Fatawu Issahaku (Leicester City)★", "Brandon Thomas-Asante (Coventry)"]
+  },
+  "Panama": { rank: 33, flag: "🇵🇦", formation: "3-4-3", coach: "Thomas Christiansen",
+    gk: ["Orlando Mosquera (Al-Fayha)★", "César Samudio (Marathón)", "John Gunn (New England II)"],
+    def: ["José Córdoba (Norwich City)★", "Fidel Escobar (Saprissa)", "Edgardo Fariña (Khor Fakkan)", "Michael Amir Murillo (Marseille)★", "César Blackman (Slovan Bratislava)", "Roderick Miller (Turan)"],
+    mid: ["Adalberto Carrasquilla (Houston Dynamo)★", "Aníbal Godoy (Nashville SC)", "Cristian Martínez (Kiryat Shmona)", "Jovani Welch (Millonarios)", "Abdiel Ayarza (The Strongest)"],
+    fwd: ["José Fajardo (Universidad Católica)★", "Ismael Díaz (Universidad Católica)", "Eduardo Guerrero (Dynamo Kyiv)", "Cecilio Waterman (Alianza Lima)", "César Yanis (San Carlos)"]
+  }
+};
 
-const ODDS=[{nation:"Spain",flag:"🇪🇸",odds:"+450",prob:18.2,tier:1},{nation:"France",flag:"🇫🇷",odds:"+480",prob:17.2,tier:1},{nation:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",odds:"+650",prob:13.3,tier:1},{nation:"Brazil",flag:"🇧🇷",odds:"+750",prob:11.8,tier:1},{nation:"Argentina",flag:"🇦🇷",odds:"+800",prob:11.1,tier:2},{nation:"Portugal",flag:"🇵🇹",odds:"+1100",prob:8.3,tier:2},{nation:"Germany",flag:"🇩🇪",odds:"+1200",prob:7.7,tier:2},{nation:"Netherlands",flag:"🇳🇱",odds:"+1600",prob:5.9,tier:2},{nation:"Morocco",flag:"🇲🇦",odds:"+2500",prob:3.8,tier:3},{nation:"Belgium",flag:"🇧🇪",odds:"+2800",prob:3.4,tier:3},{nation:"Uruguay",flag:"🇺🇾",odds:"+3000",prob:3.2,tier:3},{nation:"Colombia",flag:"🇨🇴",odds:"+3500",prob:2.8,tier:3},{nation:"USA",flag:"🇺🇸",odds:"+5000",prob:2.0,tier:3},{nation:"Mexico",flag:"🇲🇽",odds:"+6000",prob:1.6,tier:3},{nation:"Japan",flag:"🇯🇵",odds:"+7500",prob:1.3,tier:3}];
+let scores = {}; 
+let penScores = {}; 
 
-let scores={}; 
-let penScores={}; 
-
-function show(id,btn){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
-  if(id==='odds') setTimeout(drawOddsChart,80);
+  if (id === 'odds') setTimeout(drawOddsChart, 80);
 }
 
-function badgeClass(round){
-  if(round==='Group Stage') return 'badge-group';
-  if(round==='Round of 32') return 'badge-r32';
-  if(round==='Round of 16') return 'badge-r16';
-  if(round==='Quarter-final') return 'badge-qf';
-  if(round==='Semi-final') return 'badge-sf';
+function badgeClass(round) {
+  if (round === 'Group Stage') return 'badge-group';
+  if (round === 'Round of 32') return 'badge-r32';
+  if (round === 'Round of 16') return 'badge-r16';
+  if (round === 'Quarter-final') return 'badge-qf';
+  if (round === 'Semi-final') return 'badge-sf';
   return 'badge-f';
 }
 
@@ -578,6 +867,14 @@ function calculateGroupStandingsAndSeedR32() {
   let groupWinners = {};
   let groupRunnersUp = {};
   let thirdPlacePool = [];
+
+  // Always read pure structure from initial blueprints to calculate live changes accurately
+  R32_SEED_BLUEPRINT.forEach(blueprint => {
+    const targetMatch = FIXTURES.find(f => f.id === blueprint.id);
+    const orig = INITIAL_FIXTURES.find(f => f.id === blueprint.id);
+    targetMatch.home = orig.home;
+    targetMatch.away = orig.away;
+  });
 
   Object.entries(GROUP_TEAMS).forEach(([grp, teams]) => {
     const stats = teams.map(t => {
@@ -653,22 +950,22 @@ function evaluateKnockoutProgression(matchId) {
 }
 
 function renderFixtures(){
-  const round=document.getElementById('roundFilter').value;
-  const grp=document.getElementById('groupFilter').value;
-  const venue=document.getElementById('venueFilter').value;
-  const search=document.getElementById('teamSearch').value.toLowerCase();
-  let lastDate='',html='';
+  const round = document.getElementById('roundFilter').value;
+  const grp = document.getElementById('groupFilter').value;
+  const venue = document.getElementById('venueFilter').value;
+  const search = document.getElementById('teamSearch').value.toLowerCase();
+  let lastDate = '', html = '';
   
-  let filtered=FIXTURES.filter(f=>{
-    if(round!=='all'&&!f.round.includes(round)) return false;
-    if(grp!=='all'&&f.group!==grp) return false;
-    if(venue!=='all'&&!f.venue.includes(venue)) return false;
-    if(search&&!f.home.toLowerCase().includes(search)&&!f.away.toLowerCase().includes(search)) return false;
+  let filtered = FIXTURES.filter(f => {
+    if (round !== 'all' && !f.round.includes(round)) return false;
+    if (grp !== 'all' && f.group !== grp) return false;
+    if (venue !== 'all' && !f.venue.includes(venue)) return false;
+    if (search && !f.home.toLowerCase().includes(search) && !f.away.toLowerCase().includes(search)) return false;
     return true;
   });
 
-  filtered.forEach(f=>{
-    if(f.date!==lastDate){html+=`<div class="sec-label">${f.date}</div>`;lastDate=f.date;}
+  filtered.forEach(f => {
+    if (f.date !== lastDate) { html += `<div class="sec-label">${f.date}</div>`; lastDate = f.date; }
     
     const scoreHome = (scores[f.id] && scores[f.id][0] !== null) ? scores[f.id][0] : "";
     const scoreAway = (scores[f.id] && scores[f.id][1] !== null) ? scores[f.id][1] : "";
@@ -676,10 +973,10 @@ function renderFixtures(){
     const penHome = (penScores[f.id] && penScores[f.id][0] !== null) ? penScores[f.id][0] : "";
     const penAway = (penScores[f.id] && penScores[f.id][1] !== null) ? penScores[f.id][1] : "";
 
-    html+=`
+    html += `
       <div class="match-card">
         <div class="match-no">#${f.id}</div>
-        <span class="match-badge ${badgeClass(f.round)}">${f.group!=='—'?`Group ${f.group}`:f.round}</span>
+        <span class="match-badge ${badgeClass(f.round)}">${f.group !== '—' ? `Group ${f.group}` : f.round}</span>
         
         <div class="match-engine">
           <div class="engine-team home-align">
@@ -697,43 +994,42 @@ function renderFixtures(){
         <div class="match-meta">📍 ${f.venue}</div>
       </div>`;
   });
-  document.getElementById('fixtureList').innerHTML=html;
+  document.getElementById('fixtureList').innerHTML = html;
 }
 
 function renderStandings(){
-  const grid=document.getElementById('standingsGrid');
-  grid.innerHTML='';
-  Object.entries(GROUP_TEAMS).forEach(([grp,teams])=>{
-    const stats=teams.map(t=>{
-      let w=0,d=0,l=0,gf=0,ga=0,p=0;
-      FIXTURES.filter(f=>f.group===grp).forEach(f => {
-        const s=scores[f.id]; if(!s || s[0]===null || s[1]===null) return;
-        if(f.home===t.name){ gf+=s[0]; ga+=s[1]; p++; if(s[0]>s[1])w++; else if(s[0]===s[1])d++; else l++; }
-        if(f.away===t.name){ gf+=s[1]; ga+=s[0]; p++; if(s[1]>s[0])w++; else if(s[0]===s[1])d++; else l++; }
+  const grid = document.getElementById('standingsGrid');
+  grid.innerHTML = '';
+  Object.entries(GROUP_TEAMS).forEach(([grp, teams]) => {
+    const stats = teams.map(t => {
+      let w=0, d=0, l=0, gf=0, ga=0, p=0;
+      FIXTURES.filter(f => f.group === grp).forEach(f => {
+        const s = scores[f.id]; if (!s || s[0] === null || s[1] === null) return;
+        if (f.home === t.name) { gf += s[0]; ga += s[1]; p++; if (s[0] > s[1]) w++; else if (s[0] === s[1]) d++; else l++; }
+        if (f.away === t.name) { gf += s[1]; ga += s[0]; p++; if (s[1] > s[0]) w++; else if (s[0] === s[1]) d++; else l++; }
       });
-      return{...t,p,w,d,l,gf,ga,gd:gf-ga,pts:w*3+d};
-    }).sort((a,b)=>b.pts-a.pts||b.gd-a.gd);
+      return { ...t, p, w, d, l, gf, ga, gd: gf - ga, pts: w * 3 + d };
+    }).sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
     
-    grid.innerHTML+=`<div class="group-card"><div class="group-card-head">Group ${grp}<div class="cols"><span>P</span><span>GD</span><span>PTS</span></div></div>`+
-      stats.map((t,i)=>`<div class="grow ${i<2?'qualify':''}">`+
-        `<div class="gpos">${i+1}</div><div class="gflag">${t.flag}</div><div class="gname">${t.name}</div>`+
-        `<div class="gcols"><span>${t.p}</span><span>${t.gd>=0?'+':''}${t.gd}</span></div><div class="gpts">${t.pts}</div></div>`).join('')+`</div>`;
+    grid.innerHTML += `<div class="group-card"><div class="group-card-head">Group ${grp}<div class="cols"><span>P</span><span>GD</span><span>PTS</span></div></div>` +
+      stats.map((t, i) => `<div class="grow ${i < 2 ? 'qualify' : ''}">` +
+        `<div class="gpos">${i + 1}</div><div class="gflag">${t.flag}</div><div class="gname">${t.name}</div>` +
+        `<div class="gcols"><span>${t.p}</span><span>${t.gd >= 0 ? '+' : ''}${t.gd}</span></div><div class="gpts">${t.pts}</div></div>`).join('') + `</div>`;
   });
 }
 
-// Auto Simulator Framework Execution block
 function simulateGroupsAndRunKnockouts() {
-  const pool = [0,1,1,2,2,3,4];
+  const pool = [0, 1, 1, 2, 2, 3, 4];
   
   FIXTURES.forEach(f => { 
-    if(!f.isKO) scores[f.id] = [pool[Math.floor(Math.random()*pool.length)], pool[Math.floor(Math.random()*pool.length)]]; 
+    if (!f.isKO) scores[f.id] = [pool[Math.floor(Math.random() * pool.length)], pool[Math.floor(Math.random() * pool.length)]]; 
   });
   
   calculateGroupStandingsAndSeedR32();
 
   FIXTURES.forEach(f => {
-    if(f.isKO) {
-      let hG = Math.floor(Math.random()*4), aG = Math.floor(Math.random()*4);
+    if (f.isKO) {
+      let hG = Math.floor(Math.random() * 4), aG = Math.floor(Math.random() * 4);
       scores[f.id] = [hG, aG];
       if (hG === aG) penScores[f.id] = [Math.random() > 0.5 ? 5 : 4, 3];
       evaluateKnockoutProgression(f.id);
@@ -745,29 +1041,101 @@ function simulateGroupsAndRunKnockouts() {
 }
 
 function resetStandings(){ 
-  scores={}; 
-  penScores={}; 
-  FIXTURES.forEach(f => {
-    if(f.isKO) {
-      const originalBlueprint = R32_SEED_BLUEPRINT.find(b => b.id === f.id);
-      if(originalBlueprint) {
-        f.home = `${originalBlueprint.homeSource.type} Group ${originalBlueprint.homeSource.grp || '3rd'}`;
-        f.away = `${originalBlueprint.awaySource.type} Group ${originalBlueprint.awaySource.grp || '3rd'}`;
-      } else {
-        f.home = "Pending";
-        f.away = "Pending";
-      }
-    }
-  });
+  scores = {}; 
+  penScores = {}; 
+  FIXTURES = JSON.parse(JSON.stringify(INITIAL_FIXTURES));
   renderFixtures(); 
   renderStandings(); 
 }
 
-function initSquads(){ const btns=document.getElementById('nationBtns'); Object.entries(SQUADS).forEach(([n,s],i)=>{ btns.innerHTML+=`<button class="nation-btn ${i===0?'active':''}" onclick="changeSquad('${n}', this)">${s.flag} ${n}</button>`; }); renderSquad('France'); }
-function changeSquad(n, btn) { document.querySelectorAll('.nation-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSquad(n); }
-function renderSquad(n){ const sq=SQUADS[n]; if(!sq) return; document.getElementById('squadMeta').innerHTML=`<div class="squad-meta-item">🌍 <strong>Rank:</strong> #${sq.rank}</div><div class="squad-meta-item">👤 <strong>Manager:</strong> ${sq.coach}</div>`; let html='<div class="pos-section">'; sq.fwd.forEach(p=>{ html+=`<span class="player-pill star">${p}</span>`; }); html+='</div>'; document.getElementById('squadDisplay').innerHTML=html; }
-function renderOdds(){ const el=document.getElementById('oddsGrid1'); ODDS.forEach(o=>{ el.innerHTML+=`<div class="odds-card"><div class="odds-flag">${o.flag}</div><div class="odds-name">${o.nation}</div><div class="odds-val">${o.odds}</div></div>`; }); }
-let oddsDrawn=false; function drawOddsChart(){ if(oddsDrawn)return; oddsDrawn=true; new Chart(document.getElementById('oddsChart'),{type:'bar',data:{labels:ODDS.map(o=>o.nation),datasets:[{data:ODDS.map(o=>o.prob),backgroundColor:'#f5a623'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}); }
+function initSquads(){
+  const btns = document.getElementById('nationBtns');
+  btns.innerHTML = '';
+  const sortedNations = Object.keys(SQUADS).sort();
+  
+  sortedNations.forEach((nation, idx) => {
+    const squadData = SQUADS[nation];
+    btns.innerHTML += `<button class="nation-btn ${idx === 0 ? 'active' : ''}" onclick="changeSquad('${nation}', this)">${squadData.flag} ${nation}</button>`;
+  });
+  
+  if (sortedNations.length > 0) {
+    renderSquad(sortedNations[0]);
+  }
+}
+
+function changeSquad(nationName, btnElement) {
+  document.querySelectorAll('.nation-btn').forEach(b => b.classList.remove('active'));
+  btnElement.classList.add('active');
+  renderSquad(nationName);
+}
+
+function renderSquad(nationName){
+  const squad = SQUADS[nationName];
+  if (!squad) return;
+  
+  document.getElementById('squadMeta').innerHTML = `
+    <div class="squad-meta-item">🌍 <strong>FIFA Rank:</strong> #${squad.rank}</div>
+    <div class="squad-meta-item">👤 <strong>Manager:</strong> ${squad.coach}</div>
+    <div class="squad-meta-item">📋 <strong>Tactical Shape:</strong> ${squad.formation}</div>
+  `;
+  
+  let html = '';
+  const categories = [
+    { label: "🧤 Goalkeepers (GK)", data: squad.gk },
+    { label: "🛡️ Defenders (DF)", data: squad.def },
+    { label: "⚙️ Midfielders (MF)", data: squad.mid },
+    { label: "⚡ Forwards & Attackers (FW)", data: squad.fwd }
+  ];
+  
+  categories.forEach(cat => {
+    if (cat.data && cat.data.length > 0) {
+      html += `<div class="pos-section">`;
+      html += `<div class="pos-label">${cat.label}</div>`;
+      cat.data.forEach(player => {
+        const isStar = player.includes('★');
+        const cleanName = player.replace('★', '');
+        const clubMatch = cleanName.match(/\(([^)]+)\)/);
+        let displayName = cleanName;
+        let clubName = '';
+        
+        if (clubMatch) {
+          displayName = cleanName.replace(clubMatch[0], '').trim();
+          clubName = clubMatch[1];
+        }
+        
+        html += `
+          <span class="player-pill ${isStar ? 'star' : ''}">
+            ${displayName} ${clubName ? `<span class="pclub">(${clubName})</span>` : ''} ${isStar ? '⭐' : ''}
+          </span>`;
+      });
+      html += `</div>`;
+    }
+  });
+  document.getElementById('squadDisplay').innerHTML = html;
+}
+
+const ODDS = [{nation:"Spain",flag:"🇪🇸",odds:"+450",prob:18.2,tier:1},{nation:"France",flag:"🇫🇷",odds:"+480",prob:17.2,tier:1},{nation:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",odds:"+650",prob:13.3,tier:1},{nation:"Brazil",flag:"🇧🇷",odds:"+750",prob:11.8,tier:1},{nation:"Argentina",flag:"🇦🇷",odds:"+800",prob:11.1,tier:2},{nation:"Portugal",flag:"🇵🇹",odds:"+1100",prob:8.3,tier:2},{nation:"Germany",flag:"🇩🇪",odds:"+1200",prob:7.7,tier:2},{nation:"Netherlands",flag:"🇳🇱",odds:"+1600",prob:5.9,tier:2},{nation:"Morocco",flag:"🇲🇦",odds:"+2500",prob:3.8,tier:3},{nation:"Belgium",flag:"🇧🇪",odds:"+2800",prob:3.4,tier:3},{nation:"Uruguay",flag:"🇺🇾",odds:"+3000",prob:3.2,tier:3},{nation:"Colombia",flag:"🇨🇴",odds:"+3500",prob:2.8,tier:3},{nation:"USA",flag:"🇺🇸",odds:"+5000",prob:2.0,tier:3},{nation:"Mexico",flag:"🇲🇽",odds:"+6000",prob:1.6,tier:3},{nation:"Japan",flag:"🇯🇵",odds:"+7500",prob:1.3,tier:3}];
+
+let oddsDrawn = false; 
+function drawOddsChart(){ 
+  if (oddsDrawn) return; 
+  oddsDrawn = true; 
+  new Chart(document.getElementById('oddsChart'),{type:'bar',data:{labels:ODDS.map(o=>o.nation),datasets:[{data:ODDS.map(o=>o.prob),backgroundColor:'#f5a623'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}); 
+}
+
+function renderOdds(){
+  const t1 = document.getElementById('oddsGrid1');
+  const t2 = document.getElementById('oddsGrid2');
+  const t3 = document.getElementById('oddsGrid3');
+  t1.innerHTML = ''; t2.innerHTML = ''; t3.innerHTML = '';
+  
+  ODDS.forEach(o => {
+    const cardHtml = `<div class="odds-card ${o.tier===1?'fav':''}"><div class="odds-flag">${o.flag}</div><div class="odds-name">${o.nation}</div><div class="odds-val">${o.odds}</div><div class="odds-prob">Implied: ${o.prob}%</div></div>`;
+    if (o.tier === 1) t1.innerHTML += cardHtml;
+    else if (o.tier === 2) t2.innerHTML += cardHtml;
+    else t3.innerHTML += cardHtml;
+  });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   calculateGroupStandingsAndSeedR32(); 
