@@ -504,7 +504,7 @@ const INITIAL_FIXTURES = [
 ];
 
 let FIXTURES = JSON.parse(JSON.stringify(INITIAL_FIXTURES));
-const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴\u200D☠️"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
+const GROUP_TEAMS={A:[{name:"Mexico",flag:"🇲🇽"},{name:"South Korea",flag:"🇰🇷"},{name:"Czechia",flag:"🇨🇿"},{name:"South Africa",flag:"🇿🇦"}],B:[{name:"Canada",flag:"🇨🇦"},{name:"Switzerland",flag:"🇨🇭"},{name:"Bosnia & Herz.",flag:"🇧🇦"},{name:"Qatar",flag:"🇶🇦"}],C:[{name:"Brazil",flag:"🇧🇷"},{name:"Morocco",flag:"🇲🇦"},{name:"Scotland",flag:"🏴\u200D☠️"},{name:"Haiti",flag:"🇭🇹"}],D:[{name:"USA",flag:"🇺🇸"},{name:"Türkiye",flag:"🇹🇷"},{name:"Paraguay",flag:"🇵🇾"},{name:"Australia",flag:"🇦🇺"}],E:[{name:"Germany",flag:"🇩🇪"},{name:"Ivory Coast",flag:"🇨🇮"},{name:"Ecuador",flag:"🇪🇨"},{name:"Curaçao",flag:"🇨🇼"}],F:[{name:"Netherlands",flag:"🇳🇱"},{name:"Japan",flag:"🇯🇵"},{name:"Sweden",flag:"🇸🇪"},{name:"Tunisia",flag:"🇹🇳"}],G:[{name:"Belgium",flag:"🇧🇪"},{name:"Iran",flag:"🇮🇷"},{name:"Egypt",flag:"🇪🇬"},{name:"New Zealand",flag:"🇳🇿"}],H:[{name:"Spain",flag:"🇪🇸"},{name:"Uruguay",flag:"🇺🇾"},{name:"Saudi Arabia",flag:"🇸🇦"},{name:"Cape Verde",flag:"🇨🇻"}],I:[{name:"France",flag:"🇫🇷"},{name:"Norway",flag:"🇳🇴"},{name:"Senegal",flag:"🇸🇳"},{name:"Iraq",flag:"🇮🇶"}],J:[{name:"Argentina",flag:"🇦🇷"},{name:"Algeria",flag:"🇩🇿"},{name:"Austria",flag:"🇦🇹"},{name:"Jordan",flag:"🇯🇴"}],K:[{name:"Portugal",flag:"🇵🇹"},{name:"Colombia",flag:"🇨🇴"},{name:"Uzbekistan",flag:"🇺🇿"},{name:"DR Congo",flag:"🇨🇩"}],L:[{name:"England",flag:"🏴\u200D☠️"},{name:"Croatia",flag:"🇭🇷"},{name:"Ghana",flag:"🇬🇭"},{name:"Panama",flag:"🇵🇦"}]};
 
 const SQUADS = {
   "Argentina": { rank: 1, flag: "🇦🇷", formation: "4-3-3", coach: "Lionel Scaloni",
@@ -755,7 +755,6 @@ function initSquads(){
   const btns = document.getElementById('nationBtns');
   btns.innerHTML = '';
   
-  // Extract all 48 unique country names from our core schedule mapping structure
   const allNations = [];
   Object.values(GROUP_TEAMS).forEach(list => {
     list.forEach(t => allNations.push(t.name));
@@ -763,7 +762,6 @@ function initSquads(){
   allNations.sort();
 
   allNations.forEach((nation, idx) => {
-    // Find flag from the group structure
     let flag = "⚽";
     Object.values(GROUP_TEAMS).forEach(list => {
       const match = list.find(t => t.name === nation);
@@ -786,12 +784,39 @@ function changeSquad(nationName, btnElement) {
 function renderSquad(nationName){
   let squad = SQUADS[nationName];
   
-  // Dynamic Data-Generation Fallback Engine
   if (!squad) {
+    const rankMap = {
+      "Argentina": 1, "Spain": 2, "France": 3, "England": 4, "Portugal": 5, "Brazil": 6, "Morocco": 7, "Netherlands": 8, "Belgium": 9, "Germany": 10,
+      "Croatia": 11, "Colombia": 13, "Mexico": 15, "Uruguay": 16, "USA": 17, "Japan": 18, "Switzerland": 19, "Iran": 21, "Türkiye": 22, "Ecuador": 23,
+      "Austria": 24, "South Korea": 25, "Australia": 27, "Egypt": 29, "Canada": 30, "Norway": 31, "Panama": 33, "Ivory Coast": 34, "Algeria": 37, "Sweden": 38,
+      "Paraguay": 40, "Czechia": 41, "Scotland": 43, "Tunisia": 44, "DR Congo": 46, "Uzbekistan": 50, "Qatar": 55, "Iraq": 57, "South Africa": 60, "Saudi Arabia": 61,
+      "Jordan": 63, "Bosnia & Herz.": 65, "Cape Verde": 69, "Ghana": 74, "Curaçao": 82, "Haiti": 83, "New Zealand": 85
+    };
+
+    const managerMap = {
+      "Spain": "Luis de la Fuente", "France": "Didier Deschamps", "England": "Thomas Tuchel", "Portugal": "Roberto Martínez", 
+      "Brazil": "Dorival Júnior", "Morocco": "Walid Regragui", "Netherlands": "Ronald Koeman", "Belgium": "Domenico Tedesco", 
+      "Croatia": "Zlatko Dalić", "Colombia": "Néstor Lorenzo", "Mexico": "Javier Aguirre", "Uruguay": "Marcelo Bielsa", 
+      "USA": "Mauricio Pochettino", "Japan": "Hajime Moriyasu", "Switzerland": "Murat Yakin", "Iran": "Amir Ghalenoei", 
+      "Türkiye": "Vincenzo Montella", "Ecuador": "Sebastián Beccacece", "Austria": "Ralf Rangnick", "South Korea": "Hong Myung-bo", 
+      "Australia": "Tony Popovic", "Egypt": "Hossam Hassan", "Canada": "Jesse Marsch", "Norway": "Ståle Solbakken", 
+      "Panama": "Thomas Christiansen", "Ivory Coast": "Emerse Faé", "Algeria": "Vladimir Petković", "Sweden": "Jon Dahl Tomasson", 
+      "Paraguay": "Gustavo Alfaro", "Czechia": "Ivan Hašek", "Scotland": "Steve Clarke", "Tunisia": "Kais Yaâkoubi", 
+      "DR Congo": "Sébastien Desabre", "Uzbekistan": "Srečko Katanec", "Qatar": "Tintín Márquez", "Iraq": "Jesús Casas", 
+      "South Africa": "Hugo Broos", "Saudi Arabia": "Hervé Renard", "Jordan": "Jamal Sellami", "Bosnia & Herz.": "Sergej Barbarez", 
+      "Cape Verde": "Bubista", "Ghana": "Otto Addo", "Curaçao": "Dick Advocaat", "Haiti": "Sébastien Migné", "New Zealand": "Darren Bazeley"
+    };
+
+    const formationMap = {
+      "Brazil": "4-2-4", "France": "4-3-3", "Spain": "4-3-3", "England": "4-2-3-1", "Uruguay": "4-3-3", 
+      "Morocco": "4-2-3-1", "Netherlands": "4-3-3", "Portugal": "4-3-3", "USA": "4-3-3", "Japan": "3-4-2-1", 
+      "Colombia": "4-2-3-1", "Haiti": "4-4-2", "Paraguay": "4-3-3", "Australia": "4-3-3", "Ecuador": "4-2-3-1"
+    };
+
     squad = {
-      rank: "N/A",
-      coach: "National Technical Staff",
-      formation: "4-3-3 Balanced",
+      rank: rankMap[nationName] || "N/A",
+      coach: managerMap[nationName] || "National Technical Staff",
+      formation: formationMap[nationName] || "4-2-3-1 Balanced",
       gk: [`First Choice GK (${nationName})`, `Backup GK 1 (${nationName})`, `Backup GK 2 (${nationName})`],
       def: [`Center Back A (${nationName})`, `Center Back B (${nationName})`, `Left Fullback (${nationName})`, `Right Fullback (${nationName})`, `Defensive Depth 1 (${nationName})`, `Defensive Depth 2 (${nationName})`],
       mid: [`Central Midfielder (${nationName})`, `Box-to-Box Mid (${nationName})`, `Playmaker (${nationName})`, `Midfield Sub 1 (${nationName})`, `Midfield Sub 2 (${nationName})`],
